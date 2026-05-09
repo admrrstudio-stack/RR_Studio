@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Aventura Jurássica do Leo 🦕 5 Anos!</title>
+
+  <!-- ========================================================
+       FONTES (Google Fonts)
+       - "Boogaloo"   → títulos lúdicos e aventureiros
+       - "Nunito"     → textos descritivos, limpa e legível
+  ======================================================== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* =========================================================
+       VARIÁVEIS & RESET
+    ========================================================= */
+    :root {
+      --jungle-dark:   #1a3a1a;
+      --jungle-mid:    #2d6a2d;
+      --jungle-light:  #4a9e3f;
+      --jungle-bright: #6bbf59;
+      --earth-dark:    #5c3a1e;
+      --earth-mid:     #8b5a2b;
+      --earth-light:   #c8915a;
+      --accent-yellow: #f5c842;
+      --accent-orange: #f07d1c;
+      --accent-amber:  #e8a825;
+      --text-light:    #f7f3e8;
+      --text-muted:    #c9bfa8;
+      --shadow-dark:   rgba(0,0,0,.55);
+      --radius-xl:     20px;
+      --radius-pill:   60px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: var(--jungle-dark);
+      color: var(--text-light);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* =========================================================
+       FUNDO GLOBAL — pegadas e padrão de folhas
+    ========================================================= */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      /* Padrão SVG inline: pegadas sutis + textura de selva */
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cellipse cx='30' cy='25' rx='7' ry='9' fill='%234a9e3f' opacity='.12'/%3E%3Cellipse cx='20' cy='42' rx='5' ry='7' fill='%234a9e3f' opacity='.12'/%3E%3Cellipse cx='40' cy='42' rx='5' ry='7' fill='%234a9e3f' opacity='.12'/%3E%3Cellipse cx='90' cy='85' rx='7' ry='9' fill='%234a9e3f' opacity='.1'/%3E%3Cellipse cx='80' cy='102' rx='5' ry='7' fill='%234a9e3f' opacity='.1'/%3E%3Cellipse cx='100' cy='102' rx='5' ry='7' fill='%234a9e3f' opacity='.1'/%3E%3C/svg%3E"),
+        radial-gradient(ellipse at 20% 50%, rgba(45,106,45,.3) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(26,58,26,.4) 0%, transparent 50%);
+      background-size: 120px 120px, cover, cover;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* garante que todo o conteúdo fique acima do fundo decorativo */
+    body > * { position: relative; z-index: 1; }
+
+    /* =========================================================
+       FOLHAS FLUTUANTES (decoração animada nas bordas)
+    ========================================================= */
+    .leaf {
+      position: fixed;
+      width: 80px;
+      opacity: .18;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .leaf-tl { top: 60px;  left: -10px;  transform: rotate(-20deg); }
+    .leaf-tr { top: 60px;  right: -10px; transform: rotate(20deg) scaleX(-1); }
+    .leaf-bl { bottom: 80px; left: -10px;  transform: rotate(15deg); }
+    .leaf-br { bottom: 80px; right: -10px; transform: rotate(-15deg) scaleX(-1); }
+
+    /* SVG de folha inline como background */
+    .leaf::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 120px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 120'%3E%3Cpath d='M40 5 C10 30 5 70 40 115 C75 70 70 30 40 5Z' fill='%234a9e3f'/%3E%3Cline x1='40' y1='5' x2='40' y2='115' stroke='%232d6a2d' stroke-width='2'/%3E%3Cline x1='40' y1='40' x2='20' y2='55' stroke='%232d6a2d' stroke-width='1.5'/%3E%3Cline x1='40' y1='60' x2='60' y2='75' stroke='%232d6a2d' stroke-width='1.5'/%3E%3Cline x1='40' y1='75' x2='18' y2='88' stroke='%232d6a2d' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat center/contain;
+    }
+
+    /* =========================================================
+       BARRA R&R STUDIO — topo fixo
+    ========================================================= */
+    .rr-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 46px;
+      background: rgba(8, 14, 8, .92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(106,191,89,.25);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      z-index: 9999;
+      gap: 12px;
+    }
+
+    .rr-bar a {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--accent-yellow);
+      text-decoration: none;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: .82rem;
+      letter-spacing: .03em;
+      transition: color .2s, transform .2s;
+    }
+    .rr-bar a:hover { color: #fff; transform: translateX(-3px); }
+    .rr-bar a svg { flex-shrink: 0; }
+
+    .rr-bar-logo {
+      margin-left: auto;
+      font-family: 'Boogaloo', cursive;
+      font-size: 1rem;
+      color: rgba(255,255,255,.35);
+      letter-spacing: .06em;
+    }
+
+    /* =========================================================
+       ESPAÇADOR (empurra o conteúdo abaixo da barra fixa)
+    ========================================================= */
+    .top-spacer { height: 46px; }
+
+    /* =========================================================
+       HERO SECTION
+    ========================================================= */
+    .hero {
+      min-height: calc(100svh - 46px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Gradiente dramático atrás do hero ── */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 70% at 50% 40%,
+        rgba(74,158,63,.35) 0%,
+        transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── Dinossauro placeholder (canto inferior direito) ──
+       SUBSTITUA: troque o background-color + remova o conteúdo
+       ::after e adicione background-image: url('seu-dino.png')
+       ── */
+    .hero-dino {
+      position: absolute;
+      bottom: 0; right: -10px;
+      width: clamp(140px, 38vw, 220px);
+      height: clamp(180px, 50vw, 290px);
+      /* ► PLUG: background-image: url('dino-hero.png'); */
+      background: linear-gradient(135deg, rgba(106,191,89,.15), rgba(74,158,63,.1));
+      border-radius: 50% 50% 0 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .hero-dino::after {
+      content: '🦕';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(80px, 20vw, 140px);
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,.5));
+    }
+
+    /* ── Folhagem no canto esquerdo do hero ── */
+    .hero-foliage {
+      position: absolute;
+      left: -20px; bottom: 0;
+      width: clamp(80px, 25vw, 160px);
+      height: clamp(160px, 40vw, 260px);
+      /* ► PLUG: background-image: url('folhagem-esq.png'); */
+      pointer-events: none;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 260'%3E%3Cellipse cx='40' cy='180' rx='55' ry='80' fill='%231a3a1a'/%3E%3Cellipse cx='80' cy='200' rx='55' ry='60' fill='%232d6a2d' opacity='.8'/%3E%3Cellipse cx='30' cy='120' rx='35' ry='55' fill='%232d6a2d' opacity='.7'/%3E%3Cellipse cx='70' cy='140' rx='45' ry='65' fill='%234a9e3f' opacity='.6'/%3E%3C/svg%3E") no-repeat bottom left / contain;
+      opacity: .7;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--earth-mid);
+      color: var(--accent-yellow);
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: .75rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(245,200,66,.35);
+      margin-bottom: 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.3);
+    }
+
+    .hero h1 {
+      font-family: 'Boogaloo', cursive;
+      font-size: clamp(2.4rem, 9vw, 4.2rem);
+      line-height: 1.1;
+      color: var(--text-light);
+      text-shadow: 0 4px 24px rgba(0,0,0,.6), 0 0 60px rgba(106,191,89,.3);
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .hero h1 span {
+      color: var(--accent-yellow);
+      display: block;
+      font-size: 1.15em;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 3.5vw, 1.25rem);
+      color: var(--accent-orange);
+      font-weight: 800;
+      letter-spacing: .04em;
+      margin-bottom: 28px;
+      text-shadow: 0 2px 10px rgba(0,0,0,.4);
+    }
+
+    .hero-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      justify-content: center;
+      margin-bottom: 36px;
+    }
+
+    .hero-info-item {
+      background: rgba(0,0,0,.4);
+      border: 1px solid rgba(106,191,89,.3);
+      border-radius: 12px;
+      padding: 8px 18px;
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--text-light);
+      backdrop-filter: blur(6px);
+    }
+    .hero-info-item span { color: var(--accent-yellow); margin-right: 6px; }
+
+    /* ── Botão pulsante ── */
+    .btn-scroll {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--jungle-light), var(--jungle-bright));
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: .95rem;
+      padding: 14px 28px;
+      border-radius: var(--radius-pill);
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(74,158,63,.5), 0 0 0 0 rgba(74,158,63,.4);
+      animation: pulse-green 2.2s infinite;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes pulse-green {
+      0%, 100% { box-shadow: 0 4px 20px rgba(74,158,63,.5), 0 0 0 0 rgba(106,191,89,.4); }
+      50%       { box-shadow: 0 6px 28px rgba(74,158,63,.7), 0 0 0 14px rgba(106,191,89,0); }
+    }
+
+    .btn-scroll:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+    /* Ícone de seta animado */
+    .arrow-down {
+      animation: bounce-arrow 1.4s ease-in-out infinite;
+      display: inline-block;
+    }
+    @keyframes bounce-arrow {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(5px); }
+    }
+
+    /* =========================================================
+       SEÇÕES GENÉRICAS
+    ========================================================= */
+    .section {
+      padding: 64px 20px 56px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-family: 'Boogaloo', cursive;
+      font-size: clamp(1.9rem, 7vw, 2.8rem);
+      color: var(--text-light);
+      text-align: center;
+      margin-bottom: 8px;
+      line-height: 1.1;
+    }
+
+    .section-title .emoji { font-size: 1.1em; }
+
+    .section-divider {
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--jungle-light), var(--accent-yellow));
+      border-radius: 4px;
+      margin: 12px auto 28px;
+    }
+
+    /* =========================================================
+       SEPARADOR DECORATIVO (pegadas entre seções)
+    ========================================================= */
+    .dino-divider {
+      text-align: center;
+      padding: 8px 0;
+      font-size: 1.4rem;
+      letter-spacing: 12px;
+      opacity: .4;
+      user-select: none;
+    }
+
+    /* =========================================================
+       CARD BASE
+    ========================================================= */
+    .card {
+      background: rgba(0,0,0,.38);
+      border: 1px solid rgba(106,191,89,.2);
+      border-radius: var(--radius-xl);
+      padding: 28px 22px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0,0,0,.35);
+    }
+
+    /* =========================================================
+       LOCALIZAÇÃO
+    ========================================================= */
+    .location-icon {
+      font-size: 3rem;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .location-name {
+      font-family: 'Boogaloo', cursive;
+      font-size: 1.5rem;
+      color: var(--accent-yellow);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .location-address {
+      font-size: .92rem;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+
+    .btn-map {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 15px 20px;
+      background: linear-gradient(135deg, var(--earth-mid), var(--earth-dark));
+      color: var(--text-light);
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      border-radius: var(--radius-pill);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,.4);
+      transition: transform .2s, filter .2s;
+    }
+    .btn-map:hover { transform: translateY(-2px); filter: brightness(1.15); }
+
+    /* =========================================================
+       RSVP / CONFIRMAÇÃO
+    ========================================================= */
+    .rsvp-desc {
+      text-align: center;
+      font-size: .95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .rsvp-deadline {
+      display: inline-block;
+      background: rgba(245,200,66,.15);
+      border: 1px solid rgba(245,200,66,.4);
+      color: var(--accent-yellow);
+      font-weight: 700;
+      font-size: .82rem;
+      padding: 4px 14px;
+      border-radius: var(--radius-pill);
+      margin-bottom: 20px;
+    }
+
+    .btn-rsvp {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 17px 20px;
+      background: linear-gradient(135deg, #25d366, #128c4e);
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 1.05rem;
+      border-radius: var(--radius-pill);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(37,211,102,.35);
+      transition: transform .2s, filter .2s;
+    }
+    .btn-rsvp:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+    /* Ícone WhatsApp SVG inline */
+    .wpp-icon { width: 22px; height: 22px; flex-shrink: 0; }
+
+    /* =========================================================
+       LISTA DE PRESENTES
+    ========================================================= */
+    .gifts-desc {
+      text-align: center;
+      font-size: .93rem;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+
+    .gifts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .btn-gift {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 18px 12px;
+      background: rgba(0,0,0,.3);
+      border: 1.5px solid rgba(106,191,89,.25);
+      border-radius: var(--radius-xl);
+      color: var(--text-light);
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: .82rem;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .25s, transform .2s, border-color .25s;
+    }
+    .btn-gift:hover {
+      background: rgba(74,158,63,.2);
+      border-color: var(--jungle-bright);
+      transform: translateY(-2px);
+    }
+
+    .btn-gift .gift-icon { font-size: 1.8rem; }
+    .btn-gift .gift-label { color: var(--accent-yellow); font-size: .75rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+
+    /* =========================================================
+       MODAL PIX
+    ========================================================= */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(6px);
+      z-index: 8000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: var(--jungle-dark);
+      border: 1px solid rgba(106,191,89,.35);
+      border-radius: var(--radius-xl);
+      padding: 32px 24px 28px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+      animation: modal-in .3s ease;
+    }
+
+    @keyframes modal-in {
+      from { transform: scale(.88) translateY(20px); opacity: 0; }
+      to   { transform: scale(1) translateY(0);      opacity: 1; }
+    }
+
+    .modal-box h3 {
+      font-family: 'Boogaloo', cursive;
+      font-size: 1.6rem;
+      color: var(--accent-yellow);
+      margin-bottom: 6px;
+    }
+
+    .modal-box p {
+      font-size: .88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    .pix-key-box {
+      background: rgba(255,255,255,.07);
+      border: 1.5px dashed rgba(245,200,66,.5);
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 1.05rem;
+      color: var(--accent-yellow);
+      letter-spacing: .05em;
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: background .2s;
+      position: relative;
+    }
+    .pix-key-box:hover { background: rgba(245,200,66,.12); }
+
+    .pix-copy-hint {
+      font-size: .76rem;
+      color: var(--jungle-bright);
+      margin-bottom: 20px;
+    }
+
+    .btn-modal-close {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      color: var(--text-light);
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: .9rem;
+      padding: 10px 28px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-modal-close:hover { background: rgba(255,255,255,.15); }
+
+    /* =========================================================
+       GALERIA DE FOTOS
+    ========================================================= */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .gallery-item {
+      aspect-ratio: 1;
+      border-radius: 14px;
+      overflow: hidden;
+      position: relative;
+      border: 2px solid rgba(106,191,89,.2);
+      box-shadow: 0 4px 16px rgba(0,0,0,.4);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .gallery-item:hover {
+      transform: scale(1.04);
+      box-shadow: 0 8px 28px rgba(0,0,0,.55);
+    }
+
+    /* ► PLUG: Para cada item, adicione a imagem como:
+         background-image: url('foto-leo-1.jpg');
+         background-size: cover; background-position: center;
+       Ou substitua o conteúdo do ::after pelo <img> */
+    .gallery-item .photo-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 2rem;
+      color: rgba(255,255,255,.25);
+    }
+
+    .gallery-item.photo-1 .photo-placeholder { background: linear-gradient(135deg, #2d4a20, #3a6b25); }
+    .gallery-item.photo-2 .photo-placeholder { background: linear-gradient(135deg, #3a2a0e, #5c3a1e); }
+    .gallery-item.photo-3 .photo-placeholder { background: linear-gradient(135deg, #1a3a30, #2d6a55); }
+
+    .photo-placeholder span {
+      font-family: 'Nunito', sans-serif;
+      font-size: .62rem;
+      font-weight: 700;
+      color: rgba(255,255,255,.3);
+      text-align: center;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    /* =========================================================
+       RODAPÉ
+    ========================================================= */
+    .footer {
+      background: rgba(0,0,0,.5);
+      border-top: 1px solid rgba(106,191,89,.15);
+      text-align: center;
+      padding: 24px 20px 110px; /* espaço para o botão flutuante */
+    }
+
+    .footer-dino { font-size: 1.8rem; margin-bottom: 8px; }
+
+    .footer-text {
+      font-size: .8rem;
+      color: rgba(255,255,255,.25);
+      line-height: 1.6;
+    }
+
+    .footer-text a {
+      color: var(--jungle-bright);
+      text-decoration: none;
+    }
+
+    /* =========================================================
+       BOTÃO FLUTUANTE CTA — AGÊNCIA
+    ========================================================= */
+    .cta-float {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9990;
+      /* largura adaptativa */
+      width: calc(100% - 36px);
+      max-width: 480px;
+    }
+
+    .cta-float a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px 22px;
+      background: linear-gradient(135deg, var(--accent-amber), var(--accent-orange));
+      color: var(--jungle-dark);
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: .88rem;
+      border-radius: var(--radius-pill);
+      text-decoration: none;
+      box-shadow:
+        0 6px 24px rgba(232,168,37,.45),
+        0 2px 8px rgba(0,0,0,.35);
+      transition: transform .2s, filter .2s;
+      letter-spacing: .01em;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    /* CORREÇÃO PASSO 2: Regra de hover unificada — mantém translateX(-50%) para não perder a centralização */
+    .cta-float a:hover { transform: translateY(-3px) translateX(-50%); filter: brightness(1.08); }
+
+    .cta-float-star { font-size: 1.1rem; flex-shrink: 0; }
+
+    /* =========================================================
+       ANIMAÇÃO DE ENTRADA — fade + slide up
+    ========================================================= */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =========================================================
+       TOAST (feedback de cópia de PIX)
+    ========================================================= */
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--jungle-light);
+      color: #fff;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: .85rem;
+      padding: 10px 22px;
+      border-radius: var(--radius-pill);
+      box-shadow: 0 4px 16px rgba(0,0,0,.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s, transform .3s;
+      z-index: 10000;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* =========================================================
+       RESPONSIVO — garantias para telas muito pequenas
+    ========================================================= */
+    @media (max-width: 360px) {
+      .gifts-grid { grid-template-columns: 1fr; }
+      .hero h1    { font-size: 2rem; }
+    }
+
+    /* =========================================================
+       DEMO COMERCIAL — SISTEMA DE LEGENDAS E SETAS
+    ========================================================= */
+
+    /* ── Wrapper de anotação (posição relativa ao elemento pai) ── */
+    .demo-annotation {
+      position: relative;
+    }
+
+    /* ── Bloco legenda — tema jurássico ── */
+    .demo-legend {
+      --legend-glow: rgba(106,191,89, 0.45);
+      --legend-border: rgba(106,191,89, 0.4);
+
+      background:
+        linear-gradient(135deg, rgba(26,58,26,.88) 0%, rgba(45,106,45,.75) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1.5px solid var(--legend-border);
+      border-radius: 16px 16px 16px 4px; /* "rabinho" de balão no canto inf. esq. */
+      padding: 14px 18px 13px 20px;
+      position: relative;
+      box-shadow:
+        0 0 0 1px rgba(74,158,63,.12),
+        0 6px 28px rgba(0,0,0,.55),
+        0 0 24px var(--legend-glow),
+        inset 0 1px 0 rgba(106,191,89,.18),
+        inset 0 -1px 0 rgba(0,0,0,.2);
+
+      /* Animação de entrada */
+      opacity: 0;
+      transform: translateY(12px) scale(.97);
+      transition: opacity .5s ease, transform .5s ease, box-shadow .3s ease;
+      pointer-events: none;
+    }
+
+    /* Listra decorativa lateral esquerda — como tronco de árvore */
+    .demo-legend::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 12px; bottom: 12px;
+      width: 3px;
+      background: linear-gradient(180deg, var(--jungle-bright), var(--accent-yellow), var(--jungle-bright));
+      border-radius: 0 2px 2px 0;
+      opacity: .8;
+    }
+
+    /* Pegada decorativa no canto superior direito */
+    .demo-legend::after {
+      content: '🐾';
+      position: absolute;
+      top: 8px; right: 10px;
+      font-size: .65rem;
+      opacity: .2;
+      pointer-events: none;
+    }
+
+    .demo-legend.legend-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    /* ── Pulsação de atenção após aparecer ── */
+    @keyframes legend-pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 1px rgba(74,158,63,.12), 0 6px 28px rgba(0,0,0,.55), 0 0 18px rgba(106,191,89,.35), inset 0 1px 0 rgba(106,191,89,.18), inset 0 -1px 0 rgba(0,0,0,.2); }
+      50%       { box-shadow: 0 0 0 1px rgba(74,158,63,.22), 0 6px 28px rgba(0,0,0,.55), 0 0 36px rgba(106,191,89,.65), inset 0 1px 0 rgba(106,191,89,.25), inset 0 -1px 0 rgba(0,0,0,.2); }
+    }
+    .demo-legend.legend-pulsing {
+      animation: legend-pulse-glow 2.6s ease-in-out infinite;
+    }
+
+    .demo-legend-title {
+      font-family: 'Boogaloo', cursive;
+      font-weight: 400;
+      font-size: 1rem;
+      color: var(--accent-yellow);
+      letter-spacing: .03em;
+      margin-bottom: 5px;
+      line-height: 1.2;
+      display: flex;
+      align-items: center;
+      text-shadow: 0 1px 8px rgba(0,0,0,.5);
+    }
+
+    .demo-legend-desc {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+      font-size: .78rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* ── Seta SVG animada ── */
+    .demo-arrow {
+      display: block;
+      pointer-events: none;
+      filter: drop-shadow(0 0 6px rgba(245,200,66,.8)) drop-shadow(0 0 14px rgba(240,125,28,.5));
+      opacity: 0;
+      transition: opacity .5s ease .2s;
+    }
+    .demo-arrow.arrow-visible {
+      opacity: 1;
+      animation: arrow-bounce 1.6s ease-in-out infinite;
+    }
+
+    @keyframes arrow-bounce {
+      0%, 100% { transform: translateY(0);   }
+      50%       { transform: translateY(6px); }
+    }
+    .demo-arrow.arrow-bounce-left {
+      animation: arrow-bounce-left 1.6s ease-in-out infinite;
+    }
+    @keyframes arrow-bounce-left {
+      0%, 100% { transform: translateX(0);   }
+      50%       { transform: translateX(-6px); }
+    }
+    .demo-arrow.arrow-bounce-right {
+      animation: arrow-bounce-right 1.6s ease-in-out infinite;
+    }
+    @keyframes arrow-bounce-right {
+      0%, 100% { transform: translateX(0);  }
+      50%       { transform: translateX(6px); }
+    }
+
+    /* ── Destaque de highlight no elemento alvo ── */
+    .demo-highlight {
+      outline: 2.5px solid rgba(245,200,66,.65) !important;
+      outline-offset: 4px;
+      box-shadow: 0 0 0 6px rgba(245,200,66,.08), 0 0 24px rgba(245,200,66,.35) !important;
+      border-radius: 14px;
+      transition: outline .4s, box-shadow .4s;
+    }
+
+    /* ─────────────────────────────────────────────────────────
+       LEGENDAS INLINE — inseridas dentro de cada seção
+       para posicionamento contextual
+    ───────────────────────────────────────────────────────── */
+
+    /* HERO legend */
+    .demo-block-hero {
+      margin: 0 auto 0;
+      max-width: 580px;
+      padding: 0 20px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* Wrapper genérico para legendas entre seções */
+    .demo-inline-block {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 20px 8px;
+    }
+
+    /* Flex row: seta à esquerda + legenda à direita */
+    .demo-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .demo-row .demo-legend {
+      flex: 1;
+    }
+
+    /* Seta apontando para cima (sobre o elemento) */
+    .demo-arrow-up-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: -4px;
+    }
+    .demo-arrow-left-container {
+      display: flex;
+      align-items: center;
+      padding-top: 10px;
+      flex-shrink: 0;
+    }
+    .demo-arrow-right-container {
+      display: flex;
+      align-items: center;
+      padding-top: 10px;
+      flex-shrink: 0;
+    }
+
+    /* Legenda final CTA — destaque extra */
+    .demo-legend-final {
+      --legend-glow: rgba(106,191,89,.55);
+      --legend-border: rgba(106,191,89,.45);
+      background: linear-gradient(135deg, rgba(26,58,26,.92) 0%, rgba(74,158,63,.65) 100%);
+      max-width: 580px;
+      margin: 20px auto 8px;
+    }
+    .demo-legend-final .demo-legend-title {
+      color: var(--jungle-bright);
+    }
+
+    /* ── Faixa de "DEMO COMERCIAL" ── */
+    .demo-mode-badge {
+      position: fixed;
+      top: 46px;
+      left: 0; right: 0;
+      z-index: 9000;
+      background: linear-gradient(90deg, rgba(240,125,28,.92), rgba(245,200,66,.92));
+      color: var(--jungle-dark);
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: .72rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 5px 16px;
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,.2);
+    }
+
+    /* Ajusta o spacer para acomodar a faixa de demo */
+    .demo-spacer-extra { height: 28px; }
+
+    @media (max-width: 480px) {
+      .demo-legend { padding: 13px 15px 12px; }
+      .demo-legend-title { font-size: .8rem; }
+      .demo-legend-desc  { font-size: .74rem; }
+    }
+
+    /* =========================================================
+       CSS ICONS — ícones vetoriais puros para as legendas
+    ========================================================= */
+    .css-icon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      vertical-align: middle;
+      flex-shrink: 0;
+      position: relative;
+      top: -1px;
+    }
+
+    /* ✦ Sparkle / estrela — legenda Hero */
+    .icon-sparkle {
+      background: radial-gradient(circle, var(--accent-yellow) 28%, transparent 30%);
+      box-shadow:
+        0 -6px 0 1px var(--accent-yellow),
+        0  6px 0 1px var(--accent-yellow),
+        -6px 0 0 1px var(--accent-yellow),
+         6px 0 0 1px var(--accent-yellow),
+        -4px -4px 0 1px rgba(245,200,66,.6),
+         4px -4px 0 1px rgba(245,200,66,.6),
+        -4px  4px 0 1px rgba(245,200,66,.6),
+         4px  4px 0 1px rgba(245,200,66,.6);
+      border-radius: 50%;
+      width: 4px;
+      height: 4px;
+      margin-right: 10px;
+    }
+
+    /* ◉ Pin / localização — legenda Mapa */
+    .icon-pin {
+      width: 12px;
+      height: 16px;
+      background: var(--accent-yellow);
+      border-radius: 50% 50% 48% 48% / 60% 60% 40% 40%;
+      position: relative;
+      margin-right: 9px;
+    }
+    .icon-pin::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 6px solid var(--accent-yellow);
+    }
+    .icon-pin::before {
+      content: '';
+      position: absolute;
+      top: 3px; left: 50%;
+      transform: translateX(-50%);
+      width: 5px; height: 5px;
+      background: rgba(26,58,26,.7);
+      border-radius: 50%;
+    }
+
+    /* ▣ Phone — legenda RSVP */
+    .icon-phone {
+      width: 10px;
+      height: 16px;
+      border: 2px solid var(--accent-yellow);
+      border-radius: 3px;
+      position: relative;
+      margin-right: 9px;
+    }
+    .icon-phone::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 50%;
+      transform: translateX(-50%);
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--accent-yellow);
+    }
+
+    /* ◈ Gift box — legenda Presentes */
+    .icon-gift {
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--accent-yellow);
+      border-radius: 2px;
+      position: relative;
+      margin-right: 9px;
+    }
+    .icon-gift::before {
+      content: '';
+      position: absolute;
+      top: -5px; left: 50%;
+      transform: translateX(-50%);
+      width: 10px; height: 4px;
+      border: 2px solid var(--accent-yellow);
+      border-radius: 2px;
+    }
+    .icon-gift::after {
+      content: '';
+      position: absolute;
+      top: -5px; left: 50%;
+      transform: translateX(-50%);
+      width: 2px; height: 18px;
+      background: var(--accent-yellow);
+    }
+
+    /* ◙ Camera — legenda Galeria */
+    .icon-camera {
+      width: 16px;
+      height: 12px;
+      border: 2px solid var(--accent-yellow);
+      border-radius: 2px;
+      position: relative;
+      margin-right: 9px;
+    }
+    .icon-camera::before {
+      content: '';
+      position: absolute;
+      top: -4px; left: 3px;
+      width: 6px; height: 4px;
+      border: 2px solid var(--accent-yellow);
+      border-bottom: none;
+      border-radius: 2px 2px 0 0;
+    }
+    .icon-camera::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px; height: 6px;
+      border: 2px solid var(--accent-yellow);
+      border-radius: 50%;
+    }
+
+    /* ▲ Rocket — legenda Final */
+    .icon-rocket {
+      width: 10px;
+      height: 16px;
+      background: #6bbf59;
+      clip-path: polygon(50% 0%, 100% 60%, 75% 60%, 75% 100%, 25% 100%, 25% 60%, 0% 60%);
+      margin-right: 9px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ======================================================
+       DECORAÇÃO: FOLHAS NAS BORDAS
+  ====================================================== -->
+  <div class="leaf leaf-tl"></div>
+  <div class="leaf leaf-tr"></div>
+  <div class="leaf leaf-bl"></div>
+  <div class="leaf leaf-br"></div>
+
+  <!-- ======================================================
+       BARRA R&R STUDIO (FIXA NO TOPO)
+  ====================================================== -->
+  <!-- PASSO 1: href corrigido de "index.html" para "../../index.html"
+       para garantir o retorno correto ao site principal a partir de subpasta -->
+  <header class="rr-bar" role="banner">
+    <a href="../../index.html" aria-label="Voltar para o R&R Studio">
+      <!-- Ícone de seta -->
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Voltar para o R&amp;R Studio
+    </a>
+    <span class="rr-bar-logo">R&amp;R Studio</span>
+  </header>
+
+  <!-- Empurra conteúdo abaixo da barra fixa -->
+  <div class="top-spacer" aria-hidden="true"></div>
+
+  <!-- ======================================================
+       FAIXA DE MODO DEMO COMERCIAL
+  ====================================================== -->
+  <div class="demo-mode-badge" role="note" aria-label="Modo demonstração comercial">
+    🎯 Demonstração Comercial — R&amp;R Studio
+  </div>
+  <div class="demo-spacer-extra" aria-hidden="true"></div>
+
+  <!-- ======================================================
+       HERO SECTION — Capa do Convite
+  ====================================================== -->
+  <section class="hero" aria-labelledby="hero-title">
+
+    <!-- Folhagem decorativa esquerda -->
+    <div class="hero-foliage" aria-hidden="true"></div>
+
+    <!-- Dinossauro decorativo direito
+         ► PLUG: Substitua o ::after por uma <img src="dino-hero.png" alt=""> -->
+    <div class="hero-dino" aria-hidden="true"></div>
+
+    <!-- Badge superior -->
+    <div class="hero-badge" role="text">🦖 Convite Especial</div>
+
+    <!-- Título principal -->
+    <h1 id="hero-title">
+      A Aventura Jurássica
+      <span>do Leo</span>
+    </h1>
+
+    <!-- Subtítulo -->
+    <p class="hero-sub">🎉 Ele faz 5 Anos! 🎉</p>
+
+    <!-- Informações rápidas -->
+    <div class="hero-info" role="list">
+      <div class="hero-info-item" role="listitem">
+        <span>📅</span>Sábado, 19 de Julho de 2025
+      </div>
+      <div class="hero-info-item" role="listitem">
+        <span>⏰</span>15h às 20h
+      </div>
+    </div>
+
+    <!-- Botão pulsante de scroll -->
+    <a href="#localizacao" class="btn-scroll" aria-label="Role para baixo e descubra a aventura">
+      <span>Role para baixo e descubra a aventura</span>
+      <span class="arrow-down" aria-hidden="true">↓</span>
+    </a>
+
+  </section>
+
+  <!-- ── LEGENDA 1: HERO ── -->
+  <div class="demo-inline-block reveal" id="legend-hero">
+    <div class="demo-arrow-up-container">
+      <svg class="demo-arrow" width="32" height="36" viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 36 L16 4" stroke="#f5c842" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M6 14 L16 4 L26 14" stroke="#f5c842" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="demo-legend" id="dlegend-hero">
+      <div class="demo-legend-title"><span class="css-icon icon-sparkle"></span>100% do seu jeito!</div>
+      <p class="demo-legend-desc">A capa do convite é toda personalizada: tema, cores, imagem e estilo. Dinossauros hoje, unicórnios amanhã 🦄 criamos exatamente o que você imaginar para tornar o seu evento único.</p>
+    </div>
+  </div>
+
+  <!-- ===== SEPARADOR DECORATIVO ===== -->
+  <div class="dino-divider" aria-hidden="true">🐾 🦶 🐾 🦶 🐾</div>
+
+  <!-- ======================================================
+       SEÇÃO 1 — LOCALIZAÇÃO
+  ====================================================== -->
+  <section id="localizacao" class="section reveal" aria-labelledby="loc-title">
+
+    <h2 class="section-title" id="loc-title">
+      <span class="emoji">🗺️</span> Onde será?
+    </h2>
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <div class="card">
+
+      <div class="location-icon" aria-hidden="true">🏕️</div>
+      <p class="location-name">Parque dos Dinossauros</p>
+      <p class="location-address">
+        Rua da Floresta Jurássica, 100<br>
+        Bairro Selva Verde — São Paulo, SP<br>
+        CEP: 00000-000
+      </p>
+
+      <!-- ► TROQUE a URL pelo link real do Google Maps ou Waze -->
+      <div class="btn-map demo-highlight-target-map" aria-label="Botão ilustrativo de localização">
+        📍 Como chegar
+      </div>
+
+      <!-- ── LEGENDA 2: LOCALIZAÇÃO ── -->
+      <div class="demo-inline-block reveal" id="legend-map" style="padding: 16px 0 0; max-width:100%;">
+        <div class="demo-row">
+          <div class="demo-arrow-left-container">
+            <svg class="demo-arrow arrow-bounce-right" width="36" height="24" viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 12 L32 12" stroke="#f5c842" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M22 2 L32 12 L22 22" stroke="#f5c842" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="demo-legend" id="dlegend-map">
+            <div class="demo-legend-title"><span class="css-icon icon-pin"></span>Chegue sem se perder!</div>
+            <p class="demo-legend-desc">Um toque e o convidado já abre a rota no Google Maps. Chega de papelzinho com endereço todo mundo chega na hora certa na aventura 🗺️</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== SEPARADOR DECORATIVO ===== -->
+  <div class="dino-divider" aria-hidden="true">🦕 🌿 🦖 🌿 🦕</div>
+
+  <!-- ======================================================
+       SEÇÃO 2 — CONFIRMAÇÃO DE PRESENÇA (RSVP)
+  ====================================================== -->
+  <section id="rsvp" class="section reveal" aria-labelledby="rsvp-title">
+
+    <h2 class="section-title" id="rsvp-title">
+      <span class="emoji">🦖</span> Vai vir?
+    </h2>
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <div class="card">
+
+      <p class="rsvp-desc">
+        Queremos te ver na festa do Leo! Confirme sua presença
+        pelo WhatsApp para os papais. 🥳
+      </p>
+
+      <!-- Badge de prazo -->
+      <div style="text-align:center;">
+        <span class="rsvp-deadline">⏳ Confirmar até 12 de Julho</span>
+      </div>
+
+      <!-- ► TROQUE o número: substitua SEUNUMERO pelo DDD+número sem espaços
+           Ex: 5511999999999  (55 = Brasil, 11 = DDD, 999999999 = número) -->
+      <div class="btn-rsvp" aria-label="Botão ilustrativo de confirmação via WhatsApp">
+        <svg class="wpp-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.557 4.116 1.534 5.845L.057 23.527a.5.5 0 00.609.61l5.748-1.489A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.9a9.89 9.89 0 01-5.035-1.372l-.36-.214-3.732.967.993-3.63-.235-.374A9.9 9.9 0 012.1 12C2.1 6.528 6.528 2.1 12 2.1S21.9 6.528 21.9 12 17.472 21.9 12 21.9z"/>
+        </svg>
+        ✅ Confirmar minha presença
+      </div>
+
+      <!-- ── LEGENDA 3: CONFIRMAÇÃO ── -->
+      <div class="demo-inline-block reveal" id="legend-rsvp" style="padding: 16px 0 0; max-width:100%;">
+        <div class="demo-row">
+          <div class="demo-arrow-left-container">
+            <svg class="demo-arrow arrow-bounce-right" width="36" height="24" viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 12 L32 12" stroke="#f5c842" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M22 2 L32 12 L22 22" stroke="#f5c842" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="demo-legend" id="dlegend-rsvp">
+            <div class="demo-legend-title"><span class="css-icon icon-phone"></span>Confirmar é moleza!</div>
+            <p class="demo-legend-desc">Um clique já abre o WhatsApp com a mensagem pronta. Sem ligação, sem confusão a lista de presença chega organizada direto pra você 🥳</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== SEPARADOR DECORATIVO ===== -->
+  <div class="dino-divider" aria-hidden="true">🐾 🦶 🐾 🦶 🐾</div>
+
+  <!-- ======================================================
+       SEÇÃO 3 — LISTA DE PRESENTES
+  ====================================================== -->
+  <section id="presentes" class="section reveal" aria-labelledby="gifts-title">
+
+    <h2 class="section-title" id="gifts-title">
+      <span class="emoji">🎁</span> Presentes
+    </h2>
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <div class="card">
+
+      <p class="gifts-desc">
+        Se quiser presentear o Leo, escolha a opção que preferir.
+        Qualquer carinho é muito bem-vindo! 🦕💛
+      </p>
+
+      <div class="gifts-grid">
+
+        <div class="btn-gift" aria-label="Botão ilustrativo de chave PIX">
+          <span class="gift-icon">🔑</span>
+          <span class="gift-label">Chave PIX</span>
+          Chave Pix<br>do Leo
+        </div>
+
+        <div class="btn-gift" aria-label="Botão ilustrativo de lista em loja">
+          <span class="gift-icon">🛍️</span>
+          <span class="gift-label">Loja</span>
+          🎁 Lista de<br>Presentes em Loja
+        </div>
+
+      </div>
+
+      <!-- ── LEGENDA 4: PRESENTES ── -->
+      <div class="demo-inline-block reveal" id="legend-gifts" style="padding: 16px 0 0; max-width:100%;">
+        <div class="demo-arrow-up-container">
+          <svg class="demo-arrow" width="32" height="36" viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 36 L16 4" stroke="#f5c842" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M6 14 L16 4 L26 14" stroke="#f5c842" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="demo-legend" id="dlegend-gifts">
+          <div class="demo-legend-title"><span class="css-icon icon-gift"></span>Presente na palma da mão!</div>
+          <p class="demo-legend-desc">PIX na hora ou lista de presentes na loja favorita. O convidado escolhe o que preferir, tudo em poucos toques e sem complicação 🎁</p>
+        </div>
+      </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SEPARADOR DECORATIVO ===== -->
+  <div class="dino-divider" aria-hidden="true">🦕 🌿 🦖 🌿 🦕</div>
+
+  <!-- ======================================================
+       SEÇÃO 4 — GALERIA DE FOTOS
+  ====================================================== -->
+  <section id="galeria" class="section reveal" aria-labelledby="gallery-title">
+
+    <h2 class="section-title" id="gallery-title">
+      <span class="emoji">📸</span> Nosso explorador
+    </h2>
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <div class="gallery-grid">
+
+      <!-- ► PLUG FOTO 1:
+           Substitua o conteúdo por:
+           <img src="foto-leo-1.jpg" alt="Leo em aventura 1"
+                style="width:100%;height:100%;object-fit:cover;"> -->
+      <div class="gallery-item photo-1" role="img" aria-label="Foto do Leo - placeholder 1">
+        <div class="photo-placeholder">
+          📷
+          <span>Foto 1</span>
+        </div>
+      </div>
+
+      <!-- ► PLUG FOTO 2:
+           Substitua por <img src="foto-leo-2.jpg" ...> -->
+      <div class="gallery-item photo-2" role="img" aria-label="Foto do Leo - placeholder 2">
+        <div class="photo-placeholder">
+          📷
+          <span>Foto 2</span>
+        </div>
+      </div>
+
+      <!-- ► PLUG FOTO 3:
+           Substitua por <img src="foto-leo-3.jpg" ...> -->
+      <div class="gallery-item photo-3" role="img" aria-label="Foto do Leo - placeholder 3">
+        <div class="photo-placeholder">
+          📷
+          <span>Foto 3</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── LEGENDA 5: GALERIA ── -->
+  <div class="demo-inline-block reveal" id="legend-gallery" style="padding: 0 20px 16px;">
+    <div class="demo-arrow-up-container">
+      <svg class="demo-arrow" width="32" height="36" viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 36 L16 4" stroke="#f5c842" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M6 14 L16 4 L26 14" stroke="#f5c842" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="demo-legend" id="dlegend-gallery">
+      <div class="demo-legend-title"><span class="css-icon icon-camera"></span>O rosto do(a) aniversariante aqui!</div>
+      <p class="demo-legend-desc">As fotos deixam o convite com a cara de quem você ama. Cada imagem vira uma memória que o convidado vai guardar com carinho 📸</p>
+    </div>
+  </div>
+
+  <!-- ── LEGENDA 6: OBSERVAÇÃO FINAL ── -->
+  <div class="demo-inline-block reveal" id="legend-final" style="padding: 0 20px 32px;">
+    <div class="demo-legend demo-legend-final" id="dlegend-final" style="max-width:100%;">
+      <div class="demo-legend-title" style="font-size:1rem; color: #6bbf59;"><span class="css-icon icon-rocket"></span>Seu evento, do seu jeito!</div>
+      <p class="demo-legend-desc">Cada seção pode ser adaptada, reordenada ou reinventada. A R&amp;R está pronta para criar um convite que só existe para o SEU evento ✨</p>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       RODAPÉ
+  ====================================================== -->
+  <footer class="footer">
+    <div class="footer-dino" aria-hidden="true">🦕</div>
+    <p class="footer-text">
+      Convite criado com carinho pelo
+      <a href="../../index.html">R&amp;R Studio</a><br>
+      Modernize seu evento com um convite digital único ✨
+    </p>
+  </footer>
+
+  <!-- ======================================================
+       BOTÃO FLUTUANTE CTA — CONVERSÃO DA AGÊNCIA
+  ====================================================== -->
+  <div class="cta-float" aria-label="Call to action da agência">
+    <!-- PASSO 3: Link oficial de conversão com número e mensagem URL-encoded da R&R Studio -->
+    <a
+      href="https://wa.me/5543988012469?text=Ol%C3%A1%2C%20R%26R%20Studio!%20Estava%20navegando%20pelo%20portf%C3%B3lio%20de%20voc%C3%AAs%20e%20achei%20incr%C3%ADvel%20o%20modelo%20de%20Convite%20Interativo.%20Gostaria%20de%20saber%20como%20modernizar%20o%20meu%20evento%20tamb%C3%A9m."
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Entrar em contato com a R&R Studio pelo WhatsApp"
+    >
+      <span class="cta-float-star" aria-hidden="true">⭐</span>
+      Gostei desse modelo! Quero para o meu evento
+    </a>
+  </div>
+
+  <!-- ======================================================
+       JAVASCRIPT
+  ====================================================== -->
+  <script>
+    /* --------------------------------------------------------
+       1. SCROLL REVEAL — anima seções ao entrar na tela
+    -------------------------------------------------------- */
+    (function () {
+      const revealEls = document.querySelectorAll('.reveal');
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              // Para de observar após revelar (performance)
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+      );
+
+      revealEls.forEach((el) => observer.observe(el));
+    })();
+
+    /* --------------------------------------------------------
+       2. COPIAR CHAVE PIX + FEEDBACK TOAST
+    -------------------------------------------------------- */
+    function copyPix() {
+      const keyEl = document.getElementById('pix-key');
+      const toastEl = document.getElementById('toast');
+
+      // Tenta usar a Clipboard API moderna
+      const text = keyEl.textContent.trim();
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(showToast).catch(fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
+
+      function fallbackCopy() {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;opacity:0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch {}
+        document.body.removeChild(ta);
+        showToast();
+      }
+
+      function showToast() {
+        toastEl.classList.add('show');
+        setTimeout(() => toastEl.classList.remove('show'), 2500);
+      }
+    }
+
+    /* --------------------------------------------------------
+       3. FECHAR MODAL COM ESC
+    -------------------------------------------------------- */
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.getElementById('pix-modal').classList.remove('open');
+      }
+    });
+
+    /* --------------------------------------------------------
+       4. SMOOTH SCROLL POLYFILL para Safari antigo
+         (caso o css scroll-behavior não funcione)
+    -------------------------------------------------------- */
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener('click', function (e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+    /* --------------------------------------------------------
+       5. DEMO COMERCIAL — Ativa legendas e setas com scroll
+    -------------------------------------------------------- */
+    (function () {
+      const legendIds = [
+        'legend-hero',
+        'legend-map',
+        'legend-rsvp',
+        'legend-gifts',
+        'legend-gallery',
+        'legend-final'
+      ];
+
+      // Map legend containers → their inner demo-legend divs
+      const legendMap = {
+        'legend-hero':    'dlegend-hero',
+        'legend-map':     'dlegend-map',
+        'legend-rsvp':    'dlegend-rsvp',
+        'legend-gifts':   'dlegend-gifts',
+        'legend-gallery': 'dlegend-gallery',
+        'legend-final':   'dlegend-final'
+      };
+
+      const legendObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+
+            const containerId = entry.target.id;
+            const legendInner = document.getElementById(legendMap[containerId]);
+            const arrow = entry.target.querySelector('.demo-arrow');
+
+            // Stagger: slight delay per legend
+            const delays = {
+              'legend-hero': 100, 'legend-map': 150, 'legend-rsvp': 150,
+              'legend-gifts': 150, 'legend-gallery': 120, 'legend-final': 100
+            };
+            const delay = delays[containerId] || 100;
+
+            setTimeout(() => {
+              if (legendInner) {
+                legendInner.classList.add('legend-visible');
+                // Add pulsing glow after appearance
+                setTimeout(() => legendInner.classList.add('legend-pulsing'), 600);
+              }
+              if (arrow) arrow.classList.add('arrow-visible');
+            }, delay);
+
+            legendObserver.unobserve(entry.target);
+          });
+        },
+        { threshold: 0.2, rootMargin: '0px 0px -30px 0px' }
+      );
+
+      legendIds.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) legendObserver.observe(el);
+      });
+    })();
+  </script>
+
+</body>
+</html>

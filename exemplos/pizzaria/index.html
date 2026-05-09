@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Pizzaria R&R — Cardápio Interativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C0392B;
+    --red-dark: #922B21;
+    --red-light: #E74C3C;
+    --orange: #E67E22;
+    --orange-light: #F39C12;
+    --cream: #FDF6EC;
+    --cream-dark: #F5E6CC;
+    --wood: #8B5E3C;
+    --wood-light: #A0714F;
+    --charcoal: #2C1810;
+    --text: #3D1F0F;
+    --text-muted: #7A5840;
+    --white: #FFFDF9;
+    --shadow: rgba(44, 24, 16, 0.18);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --nav-height: 48px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    overflow-x: hidden;
+    min-height: 100dvh;
+  }
+
+  /* ── WOOD TEXTURE BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        92deg,
+        transparent,
+        transparent 38px,
+        rgba(139,94,60,0.04) 38px,
+        rgba(139,94,60,0.04) 40px
+      ),
+      repeating-linear-gradient(
+        175deg,
+        transparent,
+        transparent 120px,
+        rgba(139,94,60,0.03) 120px,
+        rgba(139,94,60,0.03) 122px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─────────────────────────────
+     1. BARRA GLOBAL DE NAVEGAÇÃO
+  ───────────────────────────── */
+  #global-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-height);
+    z-index: 9999;
+    background: rgba(20, 8, 4, 0.72);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+  }
+
+  #global-nav a.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 210, 160, 0.9);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.2px;
+    padding: 6px 14px 6px 10px;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  #global-nav a.back-link:hover {
+    background: rgba(255, 255, 255, 0.13);
+    color: rgba(255, 230, 190, 1);
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+
+  #global-nav a.back-link .arrow {
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  /* ─────────────────────────────
+     CAPA / LANDING PAGE
+  ───────────────────────────── */
+  #cover {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: calc(var(--nav-height) + 32px) 24px 32px;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 10%, rgba(192,57,43,0.22) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 80% 90%, rgba(230,126,34,0.18) 0%, transparent 60%),
+      linear-gradient(160deg, #1A0A04 0%, #2C1810 40%, #3D1F0F 100%);
+    text-align: center;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  #cover.hide {
+    opacity: 0;
+    transform: scale(1.04);
+    pointer-events: none;
+  }
+
+  .cover-flame {
+    font-size: 56px;
+    animation: flicker 2.4s ease-in-out infinite;
+    filter: drop-shadow(0 0 18px rgba(230,126,34,0.8));
+    margin-bottom: 8px;
+  }
+
+  @keyframes flicker {
+    0%,100% { transform: scale(1) rotate(-1deg); }
+    33% { transform: scale(1.04) rotate(1deg); }
+    66% { transform: scale(0.97) rotate(-0.5deg); }
+  }
+
+  .cover-logo-wrap {
+    width: 130px;
+    height: 130px;
+    background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 0 0 6px rgba(192,57,43,0.3), 0 0 0 12px rgba(192,57,43,0.12), 0 20px 40px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover-logo-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    border-radius: 50%;
+  }
+
+  /* 2. Logo limpa apontando para pizza.png */
+  .cover-logo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cover-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 9vw, 44px);
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: -0.5px;
+    line-height: 1;
+    margin-bottom: 4px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  }
+
+  .cover-tagline {
+    font-size: 14px;
+    color: rgba(255,220,180,0.7);
+    font-style: italic;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .cover-info-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 18px 24px;
+    margin-bottom: 28px;
+    width: 100%;
+    max-width: 320px;
+    backdrop-filter: blur(8px);
+  }
+
+  .cover-info-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255,220,180,0.88);
+    font-size: 13.5px;
+    padding: 5px 0;
+  }
+
+  .cover-info-row + .cover-info-row {
+    border-top: 1px solid rgba(255,255,255,0.07);
+    margin-top: 5px;
+    padding-top: 10px;
+  }
+
+  .cover-info-icon { font-size: 18px; flex-shrink: 0; }
+
+  .badge-open {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(39,174,96,0.2);
+    border: 1px solid rgba(39,174,96,0.4);
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6EE7A0;
+    margin-top: 4px;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-closed {
+    background: rgba(192,57,43,0.2);
+    border-color: rgba(192,57,43,0.4);
+    color: #F1948A;
+  }
+
+  .badge-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #6EE7A0;
+    animation: pulse-dot 1.8s ease-in-out infinite;
+  }
+
+  .badge-closed .badge-dot { background: #F1948A; animation: none; }
+
+  @keyframes pulse-dot {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+
+  .btn-open-menu {
+    width: 100%;
+    max-width: 320px;
+    padding: 17px 32px;
+    background: linear-gradient(135deg, var(--red-light) 0%, var(--red) 50%, var(--red-dark) 100%);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(192,57,43,0.5), 0 2px 8px rgba(0,0,0,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.3px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-open-menu::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn-open-menu:hover::before { left: 100%; }
+  .btn-open-menu:active { transform: scale(0.97); box-shadow: 0 4px 16px rgba(192,57,43,0.4); }
+
+  /* ─────────────────────────────
+     MAIN APP
+  ───────────────────────────── */
+  #app {
+    position: relative;
+    z-index: 1;
+    min-height: 100dvh;
+    padding-top: var(--nav-height);
+    padding-bottom: 100px;
+  }
+
+  /* ── HEADER ── */
+  #header {
+    position: sticky;
+    top: var(--nav-height);
+    z-index: 100;
+    background: linear-gradient(160deg, var(--charcoal) 0%, #1F0C06 100%);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.35);
+    padding: 0;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px 10px;
+  }
+
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .header-logo-badge {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 900;
+    color: white;
+    box-shadow: 0 2px 10px rgba(192,57,43,0.5);
+    flex-shrink: 0;
+  }
+
+  .header-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    line-height: 1.1;
+  }
+
+  .header-sub {
+    font-size: 10px;
+    color: rgba(255,200,150,0.6);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .header-icon-btn {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .header-icon-btn:hover { background: rgba(255,255,255,0.14); }
+
+  /* ── CATEGORY NAV ── */
+  .cat-nav-wrap {
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 0 12px 12px;
+    display: flex;
+    gap: 8px;
+  }
+  .cat-nav-wrap::-webkit-scrollbar { display: none; }
+
+  .cat-btn {
+    flex-shrink: 0;
+    padding: 7px 16px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,200,160,0.75);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.22s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .cat-btn.active {
+    background: linear-gradient(135deg, var(--red-light), var(--red));
+    border-color: transparent;
+    color: white;
+    box-shadow: 0 4px 14px rgba(192,57,43,0.45);
+    font-weight: 600;
+  }
+
+  /* ── MENU CONTENT ── */
+  .menu-content {
+    padding: 0 14px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 28px 4px 16px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--charcoal);
+    line-height: 1;
+  }
+
+  .section-emoji { font-size: 22px; }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--cream-dark), transparent);
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  /* Bebidas: lista ao invés de grid */
+  .cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  /* ── PRODUCT CARD ── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 2px 14px var(--shadow);
+    cursor: pointer;
+    transition: transform 0.22s, box-shadow 0.22s;
+    border: 1px solid rgba(139,94,60,0.1);
+    position: relative;
+  }
+
+  .card:active { transform: scale(0.97); }
+
+  .card-img-wrap {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, var(--cream-dark) 0%, #EDD5A8 100%);
+  }
+
+  .card-img-placeholder {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 44px;
+    position: relative;
+  }
+
+  .card-img-placeholder::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.12) 100%);
+  }
+
+  .card-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: var(--red);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(192,57,43,0.4);
+    z-index: 2;
+  }
+
+  .card-body {
+    padding: 11px 12px 12px;
+  }
+
+  .card-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .card-price {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 9px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .btn-details {
+    width: 100%;
+    padding: 7px 0;
+    background: linear-gradient(135deg, var(--cream-dark), var(--cream));
+    border: 1px solid rgba(139,94,60,0.2);
+    border-radius: var(--radius-sm);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--wood);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s, color 0.2s;
+    letter-spacing: 0.2px;
+  }
+
+  .btn-details:hover {
+    background: linear-gradient(135deg, var(--red), var(--red-dark));
+    color: white;
+    border-color: transparent;
+  }
+
+  /* ── DRINK CARD (list) ── */
+  .card-drink {
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 2px 10px var(--shadow);
+    border: 1px solid rgba(139,94,60,0.08);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: transform 0.18s;
+  }
+
+  .card-drink:active { transform: scale(0.98); }
+
+  .drink-emoji {
+    font-size: 30px;
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, var(--cream-dark), #EDD5A8);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .drink-info { flex: 1; }
+
+  .drink-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 3px;
+  }
+
+  .drink-desc {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    line-height: 1.3;
+  }
+
+  .drink-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .drink-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--red);
+  }
+
+  .btn-details-sm {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--wood-light);
+    background: none;
+    border: 1px solid rgba(139,94,60,0.25);
+    border-radius: 6px;
+    padding: 3px 9px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    white-space: nowrap;
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: rgba(20,8,4,0.72);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal-sheet {
+    width: 100%;
+    max-width: 480px;
+    background: var(--white);
+    border-radius: 24px 24px 0 0;
+    padding: 0 0 40px;
+    transform: translateY(40px);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-height: 88dvh;
+    overflow-y: auto;
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.35);
+    position: relative;
+  }
+
+  .modal-overlay.open .modal-sheet { transform: translateY(0); }
+
+  .modal-handle {
+    width: 40px; height: 4px;
+    background: rgba(0,0,0,0.12);
+    border-radius: 100px;
+    margin: 14px auto 0;
+  }
+
+  .modal-img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, var(--cream-dark) 0%, #EDD5A8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 72px;
+    margin: 16px 0 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .modal-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(255,253,249,0.6) 100%);
+  }
+
+  .modal-body {
+    padding: 20px 22px 0;
+  }
+
+  .modal-category {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 6px;
+  }
+
+  .modal-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--charcoal);
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+
+  .modal-price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  .modal-price {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--red);
+  }
+
+  .modal-divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--cream-dark), transparent);
+    margin-bottom: 16px;
+  }
+
+  .modal-ingredients-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .modal-description {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  .modal-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 16px;
+  }
+
+  .tag {
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 11.5px;
+    font-weight: 500;
+    background: var(--cream-dark);
+    color: var(--wood);
+    border: 1px solid rgba(139,94,60,0.2);
+  }
+
+  .tag.green {
+    background: rgba(39,174,96,0.1);
+    color: #1E8449;
+    border-color: rgba(39,174,96,0.25);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    width: 36px; height: 36px;
+    background: rgba(0,0,0,0.08);
+    border: none;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--text-muted);
+    z-index: 10;
+  }
+
+  /* 4. BOTÃO ADICIONAR AO CARRINHO (dentro do modal) */
+  .btn-add-cart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 20px;
+    padding: 15px 24px;
+    background: linear-gradient(135deg, var(--red-light) 0%, var(--red) 50%, var(--red-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: 100px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(192,57,43,0.45);
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-add-cart::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: left 0.4s;
+  }
+
+  .btn-add-cart:hover::before { left: 100%; }
+  .btn-add-cart:active { transform: scale(0.97); }
+
+  /* 4. CARRINHO FLUTUANTE */
+  #cart-fab {
+    position: fixed;
+    bottom: 88px;
+    right: 20px;
+    z-index: 201;
+    width: 54px;
+    height: 54px;
+    background: linear-gradient(135deg, var(--charcoal) 0%, #1A0A04 100%);
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: transform 0.22s;
+    border: 1.5px solid rgba(255,255,255,0.1);
+  }
+
+  #cart-fab:active { transform: scale(0.92); }
+
+  #cart-count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--red);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    box-shadow: 0 2px 6px rgba(192,57,43,0.5);
+    transform: scale(0);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  #cart-count.visible { transform: scale(1); }
+
+  @keyframes cart-bounce {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.25); }
+    60% { transform: scale(0.92); }
+    100% { transform: scale(1); }
+  }
+
+  .cart-bounce { animation: cart-bounce 0.4s ease; }
+
+  /* ── CTA FLUTUANTE ── */
+  .whatsapp-cta {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    width: calc(100% - 32px);
+    max-width: 400px;
+  }
+
+  /* 6. CTA: gradiente laranja/dourado para diferenciar da ação de pedido */
+  .whatsapp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #F39C12 0%, #E67E22 50%, #D35400 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    box-shadow: 0 8px 28px rgba(230,126,34,0.55), 0 2px 8px rgba(0,0,0,0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .whatsapp-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: left 0.5s;
+  }
+
+  .whatsapp-btn:hover::before { left: 100%; }
+  .whatsapp-btn:active { transform: scale(0.97); box-shadow: 0 4px 16px rgba(230,126,34,0.4); }
+
+  .whatsapp-icon { font-size: 20px; }
+
+  /* ── SECTION VISIBILITY ── */
+  .menu-section { display: none; }
+  .menu-section.visible { display: block; }
+
+  /* ── FOOTER ── */
+  .footer-info {
+    text-align: center;
+    padding: 32px 24px 16px;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .footer-info strong {
+    font-size: 14px;
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+
+  /* ─────────────────────────────
+     5. LEGENDAS COMERCIAIS ("Padrão Leo")
+  ───────────────────────────── */
+  .promo-badges-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px 14px 4px;
+  }
+
+  .promo-badge {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(253,246,236,0.95) 100%);
+    border: 1px solid rgba(230,126,34,0.22);
+    border-left: 3px solid var(--orange);
+    border-radius: 12px;
+    padding: 12px 14px;
+    box-shadow: 0 2px 12px rgba(139,94,60,0.1);
+    backdrop-filter: blur(4px);
+    animation: slide-in-badge 0.5s ease both;
+  }
+
+  .promo-badge:nth-child(2) { animation-delay: 0.12s; }
+
+  @keyframes slide-in-badge {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .promo-badge-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: 1px;
+  }
+
+  .promo-badge-text {
+    font-size: 12.5px;
+    color: var(--text);
+    line-height: 1.55;
+  }
+
+  .promo-badge-text strong {
+    font-weight: 700;
+    color: var(--charcoal);
+    display: block;
+    margin-bottom: 2px;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ 1. BARRA GLOBAL DE NAVEGAÇÃO ═══════════════ -->
+<nav id="global-nav">
+  <a href="../../index.html" class="back-link">
+    <span class="arrow">←</span>
+    Voltar para o R&R Studio
+  </a>
+</nav>
+
+<!-- ═══════════════ CAPA ═══════════════ -->
+<div id="cover">
+  <div class="cover-flame">🔥</div>
+
+  <!-- 2. Tag de imagem limpa, sem Base64 -->
+  <div class="cover-logo-wrap">
+    <img src="pizza.png" alt="Logo Pizzaria R&R" style="max-width: 100%; height: auto;">
+  </div>
+
+  <h1 class="cover-brand">Pizzaria R&R</h1>
+  <p class="cover-tagline">Sabor artesanal desde sempre</p>
+
+  <div class="cover-info-card">
+    <div class="cover-info-row">
+      <span class="cover-info-icon">📍</span>
+      <span>Rua das Pizzas, 123 — Centro</span>
+    </div>
+    <div class="cover-info-row">
+      <span class="cover-info-icon">🕐</span>
+      <div>
+        <div>Terça a Domingo, 18h às 23h</div>
+        <span class="badge-open" id="status-badge">
+          <span class="badge-dot"></span>
+          <span id="status-text">Aberto Agora</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-open-menu" onclick="openMenu()">
+    🍕 &nbsp;Abrir Cardápio Interativo
+  </button>
+</div>
+
+<!-- ═══════════════ APP ═══════════════ -->
+<div id="app" style="display:none;">
+
+  <!-- HEADER -->
+  <div id="header">
+    <div class="header-top">
+      <div class="header-logo">
+        <div class="header-logo-badge">R&R</div>
+        <div>
+          <div class="header-brand">Pizzaria R&R</div>
+          <div class="header-sub">Cardápio Digital</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="header-icon-btn" title="Instagram (demonstrativo)">📸</span>
+        <span class="header-icon-btn" title="Como chegar (demonstrativo)">📍</span>
+      </div>
+    </div>
+    <!-- Category Nav -->
+    <div class="cat-nav-wrap" id="catNav">
+      <button class="cat-btn active" data-cat="tradicionais">🍕 Tradicionais</button>
+      <button class="cat-btn" data-cat="veganas">🌿 Veganas</button>
+      <button class="cat-btn" data-cat="doces">🍫 Doces</button>
+      <button class="cat-btn" data-cat="bebidas">🥤 Bebidas</button>
+      <button class="cat-btn" data-cat="sobremesas">🍮 Sobremesas</button>
+    </div>
+  </div>
+
+  <!-- 5. LEGENDAS COMERCIAIS -->
+  <div class="promo-badges-wrap">
+    <div class="promo-badge">
+      <span class="promo-badge-icon">📱</span>
+      <div class="promo-badge-text">
+        <strong>Fim do Zoom</strong>
+        Layout fluido que se adapta a qualquer celular, sem necessidade de baixar PDFs pesados.
+      </div>
+    </div>
+    <div class="promo-badge">
+      <span class="promo-badge-icon">🍕</span>
+      <div class="promo-badge-text">
+        <strong>Pedidos Automatizados</strong>
+        O cliente adiciona os itens e o pedido chega pronto ao seu WhatsApp.
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU CONTENT -->
+  <div class="menu-content">
+
+    <!-- TRADICIONAIS -->
+    <div class="menu-section visible" id="sec-tradicionais">
+      <div class="section-header">
+        <span class="section-emoji">🍕</span>
+        <h2 class="section-title">Pizzas Tradicionais</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="cards-grid" id="grid-tradicionais"></div>
+    </div>
+
+    <!-- VEGANAS -->
+    <div class="menu-section" id="sec-veganas">
+      <div class="section-header">
+        <span class="section-emoji">🌿</span>
+        <h2 class="section-title">Pizzas Veganas</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="cards-grid" id="grid-veganas"></div>
+    </div>
+
+    <!-- DOCES -->
+    <div class="menu-section" id="sec-doces">
+      <div class="section-header">
+        <span class="section-emoji">🍫</span>
+        <h2 class="section-title">Pizzas Doces</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="cards-grid" id="grid-doces"></div>
+    </div>
+
+    <!-- BEBIDAS -->
+    <div class="menu-section" id="sec-bebidas">
+      <div class="section-header">
+        <span class="section-emoji">🥤</span>
+        <h2 class="section-title">Bebidas</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="cards-list" id="grid-bebidas"></div>
+    </div>
+
+    <!-- SOBREMESAS -->
+    <div class="menu-section" id="sec-sobremesas">
+      <div class="section-header">
+        <span class="section-emoji">🍮</span>
+        <h2 class="section-title">Sobremesas</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="cards-grid" id="grid-sobremesas"></div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-info">
+    <strong>🍕 Pizzaria R&R</strong>
+    Rua das Pizzas, 123 — Centro<br>
+    Terça a Domingo · 18h às 23h<br><br>
+    <span style="font-size:11px; opacity:0.6;">Preços sujeitos a alteração sem aviso prévio</span>
+  </div>
+
+</div>
+
+<!-- ═══════════════ MODAL ═══════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-sheet" id="modalSheet">
+    <button class="modal-close" id="modalCloseBtn">✕</button>
+    <div class="modal-handle"></div>
+    <div class="modal-img" id="modalImg"><span id="modalEmoji">🍕</span></div>
+    <div class="modal-body">
+      <div class="modal-category" id="modalCategory">Pizza Tradicional</div>
+      <div class="modal-name" id="modalName">Nome do Produto</div>
+      <div class="modal-price-row">
+        <div class="modal-price" id="modalPrice">R$ 0,00</div>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-ingredients-title">Ingredientes & Detalhes</div>
+      <div class="modal-description" id="modalDescription">Descrição...</div>
+      <div class="modal-tags" id="modalTags"></div>
+
+      <!-- 4. BOTÃO ADICIONAR AO CARRINHO -->
+      <button class="btn-add-cart" id="btnAddCart">
+        🛒 &nbsp;Adicionar ao Carrinho
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 4. CARRINHO FLUTUANTE -->
+<div id="cart-fab">
+  🛒
+  <span id="cart-count">0</span>
+</div>
+
+<!-- ═══════════════ 6. CTA DA AGÊNCIA ═══════════════ -->
+<div class="whatsapp-cta" id="whatsappCta" style="display:none;">
+  <a class="whatsapp-btn"
+     href="https://wa.me/5543988012469?text=Ol%C3%A1%2C%20R%26R%20Studio!%20Estava%20navegando%20pelo%20portf%C3%B3lio%20de%20voc%C3%AAs%20e%20achei%20incr%C3%ADvel%20o%20Card%C3%A1pio%20Interativo.%20Gostaria%20de%20saber%20como%20modernizar%20o%20meu%20neg%C3%B3cio."
+     target="_blank">
+    <span class="whatsapp-icon">⭐</span>
+    Gostei desse modelo! Quero para o meu negócio
+  </a>
+</div>
+
+<script>
+// ─────────────────────────────
+// DADOS DO CARDÁPIO
+// ─────────────────────────────
+const menu = {
+  tradicionais: [
+    {
+      name: "Margherita Especial",
+      price: "R$ 52,90",
+      emoji: "🍕",
+      badge: "Clássica",
+      category: "Pizza Tradicional",
+      description: "Molho de tomate San Marzano artesanal, generosa camada de mussarela fior di latte importada, manjericão fresco, tomates-cereja assados e um fio de azeite extra virgem. A essência da pizza napolitana.",
+      tags: ["Vegetariana", "Massa Fina", "Gran Favorita"]
+    },
+    {
+      name: "Calabresa Premium",
+      price: "R$ 56,90",
+      emoji: "🔥",
+      badge: "Campeã",
+      category: "Pizza Tradicional",
+      description: "Calabresa artesanal defumada fatiada, cebola roxa caramelizada, azeitonas pretas portuguesas, mussarela derretida e orégano selecionado. Sabor intenso e irresistível.",
+      tags: ["Defumado", "Picante Suave", "Mais Pedida"]
+    },
+    {
+      name: "Portuguesa da Casa",
+      price: "R$ 58,90",
+      emoji: "🥚",
+      badge: "Especial",
+      category: "Pizza Tradicional",
+      description: "Presunto cozido português, ovos caipira, cebola, ervilhas frescas, azeitonas verdes, pimentão vermelho assado e mussarela. Nossa versão autoral da receita clássica.",
+      tags: ["Proteínas", "Ovos Caipira", "Tradicional"]
+    }
+  ],
+  veganas: [
+    {
+      name: "Vegana de Cogumelos",
+      price: "R$ 57,90",
+      emoji: "🍄",
+      badge: "Vegan",
+      category: "Pizza Vegana",
+      description: "Mix de cogumelos frescos (Paris, Shiitake e Portobello) refogados com alho e ervas, pesto de rúcula artesanal, queijo vegano de castanha de caju, tomates-cereja e rúcula fresca.",
+      tags: ["Vegana", "Sem Lactose", "Cogumelos Frescos"]
+    },
+    {
+      name: "Opção Sem Glúten",
+      price: "+ R$ 8,00",
+      emoji: "🌾",
+      badge: "Sem Glúten",
+      category: "Pizza Vegana",
+      description: "Massa artesanal preparada com farinha de arroz integral e polvilho doce. Crocante por fora, macia por dentro. Disponível para qualquer pizza do cardápio. Ideal para celíacos e intolerantes ao glúten.",
+      tags: ["Sem Glúten", "Celíacos", "Farinha de Arroz"]
+    }
+  ],
+  doces: [
+    {
+      name: "Chocolate com Morango",
+      price: "R$ 49,90",
+      emoji: "🍓",
+      badge: "Irresistível",
+      category: "Pizza Doce",
+      description: "Base de creme de chocolate belga, mussarela levemente adocicada, morangos frescos fatiados, calda de frutas vermelhas e lascas de chocolate meio amargo. Finalizada com açúcar de confeiteiro.",
+      tags: ["Sobremesa", "Frutas Frescas", "Chocolate Belga"]
+    },
+    {
+      name: "Banana com Canela",
+      price: "R$ 46,90",
+      emoji: "🍌",
+      badge: "Comfort",
+      category: "Pizza Doce",
+      description: "Bananas nanicas caramelizadas na manteiga, canela em pó do Ceilão, doce de leite artesanal, granola crocante e um toque de mel de abelhas nativas. Um abraço em forma de pizza.",
+      tags: ["Caramelizado", "Doce de Leite", "Comfort Food"]
+    }
+  ],
+  bebidas: [
+    {
+      name: "Coca-Cola",
+      price: "R$ 7,00",
+      emoji: "🥤",
+      desc: "350ml · Lata gelada",
+      description: "Refrigerante de cola, 350ml. Servida bem gelada.",
+      tags: []
+    },
+    {
+      name: "Guaraná Antarctica",
+      price: "R$ 7,00",
+      emoji: "🟢",
+      desc: "350ml · Lata gelada",
+      description: "Refrigerante de guaraná, 350ml. O clássico sabor brasileiro.",
+      tags: []
+    },
+    {
+      name: "Sprite",
+      price: "R$ 7,00",
+      emoji: "🫧",
+      desc: "350ml · Lata gelada",
+      description: "Refrigerante de limão, 350ml. Leve e refrescante.",
+      tags: []
+    },
+    {
+      name: "Suco de Laranja",
+      price: "R$ 12,00",
+      emoji: "🍊",
+      desc: "400ml · Natural espremido",
+      description: "Suco natural de laranja pera espremido na hora, 400ml. Sem adição de açúcar ou conservantes.",
+      tags: ["Natural", "Sem Açúcar"]
+    },
+    {
+      name: "Vinho Tinto Seco",
+      price: "R$ 38,00",
+      emoji: "🍷",
+      desc: "750ml · Taça disponível",
+      description: "Seleção de vinho tinto seco nacional, 750ml. Harmoniza perfeitamente com as pizzas salgadas.",
+      tags: ["Harmonização", "Adultos"]
+    },
+    {
+      name: "Vinho Branco Seco",
+      price: "R$ 38,00",
+      emoji: "🥂",
+      desc: "750ml · Taça disponível",
+      description: "Vinho branco seco gelado, 750ml. Ideal para acompanhar pizzas leves e frutos do mar.",
+      tags: ["Harmonização", "Adultos"]
+    },
+    {
+      name: "Água Mineral",
+      price: "R$ 5,00",
+      emoji: "💧",
+      desc: "500ml · Com ou Sem gás",
+      description: "Água mineral natural, 500ml. Disponível com gás ou sem gás. Informe sua preferência.",
+      tags: ["Com Gás", "Sem Gás"]
+    }
+  ],
+  sobremesas: [
+    {
+      name: "Tiramisù Clássico",
+      price: "R$ 22,90",
+      emoji: "☕",
+      badge: "Autêntico",
+      category: "Sobremesa",
+      description: "Receita italiana original com biscoitos savoiardi embebidos em espresso duplo, creme de mascarpone com gemas caipiras, licor Marsala e cacau em pó belga. Preparado artesanalmente todos os dias.",
+      tags: ["Italiano Autêntico", "Café Espresso", "Artesanal"]
+    },
+    {
+      name: "Petit Gâteau",
+      price: "R$ 19,90",
+      emoji: "🍫",
+      badge: "Quente",
+      category: "Sobremesa",
+      description: "Bolinho de chocolate belga com centro vulcânico de ganache quente, acompanhado de sorvete de creme artesanal de baunilha de Madagascar. Preparado na hora, espere de 8 a 10 minutos.",
+      tags: ["Servido Quente", "Com Sorvete", "Chocolate Belga"]
+    }
+  ]
+};
+
+// ─────────────────────────────
+// STATUS ABERTO/FECHADO
+// ─────────────────────────────
+function checkStatus() {
+  const now = new Date();
+  const day = now.getDay();
+  const hour = now.getHours();
+  const minutes = now.getMinutes();
+  const timeVal = hour + minutes / 60;
+
+  const openDays = [0, 2, 3, 4, 5, 6];
+  const isOpenDay = openDays.includes(day);
+  const isOpenTime = timeVal >= 18 && timeVal < 23;
+  const isOpen = isOpenDay && isOpenTime;
+
+  const badge = document.getElementById('status-badge');
+  const txt = document.getElementById('status-text');
+  if (!isOpen) {
+    badge.classList.add('badge-closed');
+    badge.querySelector('.badge-dot').style.animation = 'none';
+    txt.textContent = 'Fechado Agora';
+  }
+}
+
+// ─────────────────────────────
+// 3. RENDER CARDS — usando data attributes (sem inline JSON)
+// ─────────────────────────────
+function renderCard(item, category, index, categoryKey) {
+  return `
+    <div class="card" data-category-key="${categoryKey}" data-index="${index}">
+      <div class="card-img-wrap">
+        <div class="card-img-placeholder">${item.emoji}</div>
+        ${item.badge ? `<span class="card-badge">${item.badge}</span>` : ''}
+      </div>
+      <div class="card-body">
+        <div class="card-name">${item.name}</div>
+        <div class="card-price">${item.price}</div>
+        <button class="btn-details">Ver Detalhes</button>
+      </div>
+    </div>`;
+}
+
+function renderDrinkCard(item, index) {
+  return `
+    <div class="card-drink" data-category-key="bebidas" data-index="${index}">
+      <div class="drink-emoji">${item.emoji}</div>
+      <div class="drink-info">
+        <div class="drink-name">${item.name}</div>
+        <div class="drink-desc">${item.desc}</div>
+      </div>
+      <div class="drink-right">
+        <div class="drink-price">${item.price}</div>
+        <button class="btn-details-sm">Detalhes</button>
+      </div>
+    </div>`;
+}
+
+function renderAll() {
+  document.getElementById('grid-tradicionais').innerHTML =
+    menu.tradicionais.map((i, idx) => renderCard(i, 'Pizza Tradicional', idx, 'tradicionais')).join('');
+  document.getElementById('grid-veganas').innerHTML =
+    menu.veganas.map((i, idx) => renderCard(i, 'Pizza Vegana', idx, 'veganas')).join('');
+  document.getElementById('grid-doces').innerHTML =
+    menu.doces.map((i, idx) => renderCard(i, 'Pizza Doce', idx, 'doces')).join('');
+  document.getElementById('grid-bebidas').innerHTML =
+    menu.bebidas.map((i, idx) => renderDrinkCard(i, idx)).join('');
+  document.getElementById('grid-sobremesas').innerHTML =
+    menu.sobremesas.map((i, idx) => renderCard(i, 'Sobremesa', idx, 'sobremesas')).join('');
+}
+
+// ─────────────────────────────
+// 3. EVENT LISTENER GLOBAL PARA CARDS (substitui onclick inline)
+// ─────────────────────────────
+document.getElementById('app').addEventListener('click', function(e) {
+  const card = e.target.closest('[data-category-key][data-index]');
+  if (!card) return;
+
+  const categoryKey = card.dataset.categoryKey;
+  const index = parseInt(card.dataset.index, 10);
+  const item = menu[categoryKey][index];
+  if (!item) return;
+
+  openModal(item);
+});
+
+// ─────────────────────────────
+// NAVEGAÇÃO CATEGORIAS
+// ─────────────────────────────
+document.getElementById('catNav').addEventListener('click', function(e) {
+  const btn = e.target.closest('.cat-btn');
+  if (!btn) return;
+  const cat = btn.dataset.cat;
+
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('.menu-section').forEach(s => s.classList.remove('visible'));
+  document.getElementById('sec-' + cat).classList.add('visible');
+});
+
+// ─────────────────────────────
+// 3. MODAL — recebe o objeto diretamente (sem double JSON.parse)
+// ─────────────────────────────
+function openModal(item) {
+  document.getElementById('modalEmoji').textContent = item.emoji;
+  document.getElementById('modalCategory').textContent = item.category || 'Cardápio';
+  document.getElementById('modalName').textContent = item.name;
+  document.getElementById('modalPrice').textContent = item.price;
+  document.getElementById('modalDescription').textContent = item.description;
+
+  const tagsEl = document.getElementById('modalTags');
+  tagsEl.innerHTML = (item.tags || []).map(t =>
+    `<span class="tag ${['Vegana','Sem Glúten','Natural','Sem Açúcar'].includes(t) ? 'green' : ''}">${t}</span>`
+  ).join('');
+
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModalDirect() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Fechar ao clicar no overlay (fora do sheet)
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModalDirect();
+});
+
+// Fechar pelo botão X
+document.getElementById('modalCloseBtn').addEventListener('click', closeModalDirect);
+
+// ─────────────────────────────
+// 4. CARRINHO — lógica de feedback visual
+// ─────────────────────────────
+let cartCount = 0;
+
+document.getElementById('btnAddCart').addEventListener('click', function() {
+  cartCount++;
+
+  const countEl = document.getElementById('cart-count');
+  const fabEl = document.getElementById('cart-fab');
+
+  countEl.textContent = cartCount;
+  countEl.classList.add('visible');
+
+  // Animação de bounce no FAB
+  fabEl.classList.remove('cart-bounce');
+  // Forçar reflow para reiniciar animação se clicado rápido
+  void fabEl.offsetWidth;
+  fabEl.classList.add('cart-bounce');
+
+  closeModalDirect();
+});
+
+// ─────────────────────────────
+// ABRIR MENU (da capa)
+// ─────────────────────────────
+function openMenu() {
+  document.getElementById('cover').classList.add('hide');
+  setTimeout(() => {
+    document.getElementById('cover').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('whatsappCta').style.display = 'flex';
+    // 4. Mostrar FAB do carrinho
+    document.getElementById('cart-fab').style.display = 'flex';
+  }, 600);
+}
+
+// ─────────────────────────────
+// INIT
+// ─────────────────────────────
+checkStatus();
+renderAll();
+</script>
+</body>
+</html>

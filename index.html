@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>R&R Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #000;
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── INTRO ── */
+    #intro {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #logo-wrap {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: inline-block;
+      line-height: 0;
+      will-change: transform, opacity;
+    }
+
+    #logo-wrap img {
+      display: block;
+      width: 440px;
+    }
+
+    #logo-overlay {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      clip-path: inset(0 0% 0 0);
+      will-change: clip-path;
+    }
+
+    /* ── PASSO 2: GLASSMORPHISM HEADER BAR ── */
+    #header-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      z-index: 99;
+      opacity: 0;
+      will-change: opacity;
+      pointer-events: none;
+    }
+
+    #header-bar.settled {
+      pointer-events: auto;
+    }
+
+    #logo-top {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      z-index: 100;
+      pointer-events: none;
+      will-change: opacity;
+    }
+
+    #logo-top.settled {
+      pointer-events: auto;
+    }
+
+    #logo-top img {
+      display: block;
+      width: 72px;
+    }
+
+    /* ── SITE CONTENT ── */
+    #site-content {
+      opacity: 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding-top: 140px;
+      padding-bottom: 6vh;
+      will-change: opacity;
+    }
+
+    #site-content h1 {
+      font-weight: 200;
+      font-size: clamp(18px, 2.6vw, 34px);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    #site-content > p {
+      font-weight: 200;
+      font-size: clamp(12px, 1.2vw, 17px);
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.5);
+      max-width: 460px;
+      text-align: center;
+      line-height: 1.9;
+      margin-bottom: 3.5rem;
+    }
+
+    /* ── ABOUT SECTION ── */
+    #about-section {
+      width: 100%;
+      max-width: 560px;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.8rem;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    #about-section.hiding {
+      opacity: 0;
+      transform: translateY(-16px);
+      pointer-events: none;
+    }
+
+    .about-badge {
+      display: inline-block;
+      font-weight: 300;
+      font-size: clamp(9px, 0.85vw, 11px);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 0.45rem 0.9rem;
+      border-radius: 2px;
+    }
+
+    .about-title {
+      font-weight: 200;
+      font-size: clamp(22px, 3.2vw, 42px);
+      letter-spacing: 0.01em;
+      line-height: 1.25;
+      color: #fff;
+    }
+
+    .about-title strong {
+      font-weight: 400;
+      position: relative;
+    }
+
+    .about-title strong::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.35);
+    }
+
+    .about-desc {
+      font-weight: 200;
+      font-size: clamp(12px, 1.15vw, 15px);
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.85;
+      max-width: 480px;
+    }
+
+    /* ── HEADER DA SEÇÃO DE PROJETOS ── */
+    .projects-section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      width: 100%;
+    }
+
+    .projects-section-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .projects-section-label {
+      font-weight: 300;
+      font-size: clamp(9px, 0.8vw, 11px);
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      white-space: nowrap;
+    }
+
+    /* ── PASSO 3: SERVICE CARDS GRID — sem Cartão de Visitas ── */
+    /* Desktop: Cardápios e Convites lado a lado; Bio Links na linha de baixo centralizado */
+    .service-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    .service-card-biolink {
+      grid-column: span 2;
+    }
+
+    @media (max-width: 480px) {
+      .service-cards-grid {
+        grid-template-columns: 1fr;
+      }
+      .service-card-biolink {
+        grid-column: span 1;
+      }
+    }
+
+    .service-card {
+      min-height: 70px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 0.9rem 1.1rem;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Montserrat', sans-serif;
+      color: rgba(255,255,255,0.75);
+      font-weight: 300;
+      font-size: clamp(11px, 1vw, 13px);
+      letter-spacing: 0.08em;
+      transition: border-color 0.28s ease, color 0.28s ease, transform 0.28s ease, background 0.28s ease;
+      will-change: transform;
+    }
+
+    .service-card:hover {
+      border-color: rgba(255,255,255,0.38);
+      color: rgba(255,255,255,1);
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.07);
+    }
+
+    .service-card-icon {
+      font-size: 1.3em;
+      flex-shrink: 0;
+    }
+
+    .service-card-label {
+      line-height: 1.35;
+    }
+
+    .about-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      background: #fff;
+      color: #000;
+      border: none;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 400;
+      font-size: clamp(10px, 1vw, 13px);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 1rem 2rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-top: 0.4rem;
+    }
+
+    .about-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(255,255,255,0.18);
+    }
+
+    .about-cta svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+      transition: transform 0.3s ease;
+    }
+
+    .about-cta:hover svg {
+      transform: translateX(3px);
+    }
+
+    /* ── QUIZ CONTAINER ── */
+    #quiz-container {
+      display: none;
+      width: 100%;
+      max-width: 560px;
+      padding: 0 1.5rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+      pointer-events: none;
+    }
+
+    #quiz-container.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* ── BACK BUTTON (quiz) ── */
+    #btn-back {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255,255,255,0.3);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 300;
+      font-size: clamp(10px, 0.9vw, 12px);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 0;
+      margin-bottom: 1.6rem;
+      transition: color 0.25s ease;
+    }
+
+    #btn-back.visible {
+      display: flex;
+    }
+
+    #btn-back:hover {
+      color: rgba(255,255,255,0.75);
+    }
+
+    #btn-back svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      transition: transform 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    #btn-back:hover svg {
+      transform: translateX(-3px);
+    }
+
+    /* ── STEPS ── */
+    .quiz-step {
+      display: none;
+      flex-direction: column;
+      gap: 0.85rem;
+      animation: fadeSlideUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .quiz-step.active {
+      display: flex;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .quiz-label {
+      font-weight: 300;
+      font-size: clamp(11px, 1.1vw, 14px);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 0.4rem;
+    }
+
+    .quiz-question {
+      font-weight: 200;
+      font-size: clamp(15px, 1.8vw, 22px);
+      letter-spacing: 0.04em;
+      color: #fff;
+      margin-bottom: 0.6rem;
+      line-height: 1.4;
+    }
+
+    /* ── OPTION CARDS ── */
+    .quiz-option {
+      width: 100%;
+      min-height: 85px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.8);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 300;
+      font-size: clamp(12px, 1.15vw, 15px);
+      letter-spacing: 0.05em;
+      padding: 1rem 1.4rem;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quiz-option::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0);
+      transition: background 0.3s ease;
+    }
+
+    .quiz-option:hover {
+      border-color: rgba(255,255,255,0.45);
+      color: #fff;
+      transform: translateX(3px);
+    }
+
+    .quiz-option:hover::before {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .quiz-option .opt-icon {
+      font-size: 1.2em;
+      flex-shrink: 0;
+    }
+
+    /* ── PROGRESS ── */
+    .quiz-progress {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 2rem;
+    }
+
+    .progress-dot {
+      width: 20px;
+      height: 2px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+      transition: background 0.4s ease, width 0.4s ease;
+    }
+
+    .progress-dot.done {
+      background: rgba(255,255,255,0.7);
+      width: 28px;
+    }
+
+    .progress-dot.active {
+      background: rgba(255,255,255,0.9);
+      width: 28px;
+    }
+
+    /* ── LOADING ── */
+    #step-loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 2rem 0;
+      animation: fadeSlideUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    #step-loading.active { display: flex; }
+
+    .loading-text {
+      font-weight: 200;
+      font-size: clamp(13px, 1.4vw, 17px);
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .loading-bar-wrap {
+      width: 160px;
+      height: 1px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .loading-bar {
+      height: 100%;
+      width: 0%;
+      background: rgba(255,255,255,0.8);
+      animation: loadBar 1s ease forwards;
+    }
+
+    @keyframes loadBar {
+      to { width: 100%; }
+    }
+
+    /* ── FINAL STEP ── */
+    #step-final {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      animation: fadeSlideUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    #step-final.active { display: flex; }
+
+    .final-tag {
+      font-weight: 300;
+      font-size: clamp(10px, 1vw, 13px);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+
+    .final-headline {
+      font-weight: 200;
+      font-size: clamp(18px, 2.2vw, 28px);
+      letter-spacing: 0.06em;
+      line-height: 1.35;
+    }
+
+    .final-summary {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1.2rem 1.4rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 4px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .final-summary-item {
+      font-weight: 200;
+      font-size: clamp(11px, 1.1vw, 14px);
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.04em;
+      line-height: 1.6;
+    }
+
+    .final-summary-item span {
+      color: rgba(255,255,255,0.9);
+    }
+
+    /* ── CTA BUTTON ── */
+    .cta-btn {
+      background: #fff;
+      color: #000;
+      border: none;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 400;
+      font-size: clamp(11px, 1.1vw, 14px);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 1.1rem 2rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7rem;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0);
+      transition: background 0.3s ease;
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(255,255,255,0.2);
+    }
+
+    .cta-btn:hover::after {
+      background: rgba(0,0,0,0.06);
+    }
+
+    .cta-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* ── DIVIDER ── */
+    .quiz-divider {
+      width: 40px;
+      height: 1px;
+      background: rgba(255,255,255,0.15);
+      margin: 0.5rem 0;
+    }
+
+    /* ── BOTÃO "NOS CONHEÇA" ── */
+    .btn-meet-us {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      background: transparent;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.55);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 300;
+      font-size: clamp(10px, 1vw, 13px);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.85rem 2rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      margin-top: 0.6rem;
+    }
+
+    .btn-meet-us:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.85);
+    }
+
+    /* ── ABOUT-US SECTION ── */
+    #about-us-section {
+      display: none;
+      width: 100%;
+      max-width: 720px;
+      padding: 0 1.5rem;
+      flex-direction: column;
+      align-items: center;
+      gap: 2.4rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+
+    #about-us-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #btn-back-about {
+      align-self: flex-start;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255,255,255,0.3);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 300;
+      font-size: clamp(10px, 0.9vw, 12px);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 0;
+      margin-bottom: 0.4rem;
+      transition: color 0.25s ease;
+    }
+
+    #btn-back-about:hover { color: rgba(255,255,255,0.75); }
+
+    #btn-back-about svg {
+      width: 14px; height: 14px;
+      stroke: currentColor; fill: none;
+      transition: transform 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    #btn-back-about:hover svg { transform: translateX(-3px); }
+
+    .about-us-header {
+      width: 100%;
+      text-align: center;
+    }
+
+    .about-us-tag {
+      font-weight: 300;
+      font-size: clamp(9px, 0.85vw, 11px);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 0.7rem;
+    }
+
+    .about-us-title {
+      font-weight: 200;
+      font-size: clamp(20px, 2.8vw, 36px);
+      letter-spacing: 0.04em;
+      color: #fff;
+    }
+
+    .about-us-title strong {
+      font-weight: 400;
+    }
+
+    .about-us-grid {
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr;
+      gap: 0 2.5rem;
+      width: 100%;
+    }
+
+    @media (max-width: 600px) {
+      .about-us-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem 0;
+      }
+      .about-us-divider { display: none; }
+    }
+
+    .about-us-divider {
+      background: rgba(255,255,255,0.1);
+      align-self: stretch;
+    }
+
+    .member-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .member-name {
+      font-weight: 300;
+      font-size: clamp(16px, 1.9vw, 24px);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #fff;
+      transition: letter-spacing 0.3s ease, color 0.3s ease;
+      cursor: default;
+    }
+
+    .member-name:hover {
+      letter-spacing: 0.18em;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .member-role {
+      font-weight: 200;
+      font-size: clamp(10px, 0.9vw, 12px);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      margin-top: -0.4rem;
+    }
+
+    .member-desc {
+      font-weight: 200;
+      font-size: clamp(12px, 1.1vw, 14px);
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.9;
+    }
+
+    .member-line {
+      width: 80px;
+      height: 1px;
+      background: rgba(255,255,255,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .member-line::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.85);
+      animation: lineSweep 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes lineSweep {
+      0%   { left: -100%; opacity: 0; }
+      15%  { opacity: 1; }
+      50%  { left: 100%; opacity: 1; }
+      51%  { opacity: 0; }
+      100% { left: 100%; opacity: 0; }
+    }
+
+    .member-card:first-child .member-line::after {
+      animation-delay: 0s;
+    }
+
+    .member-card:last-child .member-line::after {
+      animation-delay: 1.2s;
+    }
+
+    /* ── FOTO DO MEMBRO ── */
+    .member-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      flex-shrink: 0;
+      margin-bottom: 0.4rem;
+    }
+
+    .member-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+    }
+
+    .member-photo-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* ── IMAGENS DECORATIVAS FIXAS ── */
+    .deco-img {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: clamp(80px, 10vw, 140px);
+      opacity: 0.06;
+      pointer-events: none;
+      z-index: 0;
+      animation: floatDeco 6s ease-in-out infinite;
+    }
+
+    .deco-img.deco-left  { left: 2vw;  animation-delay: 0s; }
+    .deco-img.deco-right { right: 2vw; animation-delay: 3s; }
+
+    @keyframes floatDeco {
+      0%, 100% { transform: translateY(-50%) translateY(0px); }
+      50%       { transform: translateY(-50%) translateY(-14px); }
+    }
+
+    /* ══════════════════════════════════════════
+       SERVICE DETAILS SECTION
+    ══════════════════════════════════════════ */
+    #service-details-section {
+      display: none;
+      width: 100%;
+      max-width: 560px;
+      padding: 0 1.5rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.8rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+
+    #service-details-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #btn-back-details {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgba(255,255,255,0.3);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 300;
+      font-size: clamp(10px, 0.9vw, 12px);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 0;
+      transition: color 0.25s ease;
+    }
+
+    #btn-back-details:hover { color: rgba(255,255,255,0.75); }
+
+    #btn-back-details svg {
+      width: 14px; height: 14px;
+      stroke: currentColor; fill: none;
+      transition: transform 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    #btn-back-details:hover svg { transform: translateX(-3px); }
+
+    .details-badge {
+      display: inline-block;
+      font-weight: 300;
+      font-size: clamp(9px, 0.85vw, 11px);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 0.45rem 0.9rem;
+      border-radius: 2px;
+    }
+
+    .details-title {
+      font-weight: 200;
+      font-size: clamp(22px, 3.2vw, 40px);
+      letter-spacing: 0.01em;
+      line-height: 1.25;
+      color: #fff;
+    }
+
+    .details-copy {
+      font-weight: 200;
+      font-size: clamp(12px, 1.15vw, 15px);
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.9;
+      max-width: 480px;
+    }
+
+    .details-mockups {
+      display: flex;
+      gap: 1rem;
+      width: 100%;
+      align-items: flex-start;
+    }
+
+    .mockup-img-wrap {
+      flex: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      aspect-ratio: 9/16;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mockup-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .mockup-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 1.5rem;
+      text-align: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .mockup-placeholder-icon {
+      font-size: 1.8rem;
+      opacity: 0.4;
+    }
+
+    .mockup-placeholder-text {
+      font-weight: 200;
+      font-size: clamp(9px, 0.9vw, 11px);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      line-height: 1.6;
+    }
+
+    .details-cta-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      background: #fff;
+      color: #000;
+      border: none;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 400;
+      font-size: clamp(10px, 1vw, 13px);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 1rem 2rem;
+      border-radius: 3px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .details-cta-live:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(255,255,255,0.18);
+    }
+
+    .details-cta-live.disabled {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .details-cta-live.disabled:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    .word-conecta {
+      font-weight: 400;
+      position: relative;
+      display: inline-block;
+      background: linear-gradient(
+        105deg,
+        rgba(255,255,255,0.6)  0%,
+        rgba(255,255,255,0.6)  35%,
+        rgba(255,255,255,1)    46%,
+        rgba(255,255,255,1)    54%,
+        rgba(255,255,255,0.6)  65%,
+        rgba(255,255,255,0.6)  100%
+      );
+      background-size: 300% 100%;
+      background-position: 200% 50%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: conectaShimmer 5s cubic-bezier(0.4,0,0.2,1) infinite,
+                 conectaGlow    5s cubic-bezier(0.4,0,0.2,1) infinite;
+      will-change: background-position, filter;
+    }
+
+    .word-conecta::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.25);
+      animation: conectaUnderline 5s cubic-bezier(0.4,0,0.2,1) infinite;
+    }
+
+    @keyframes conectaShimmer {
+      0%   { background-position: 200% 50%; }
+      24%  { background-position: 200% 50%; }
+      48%  { background-position: -30% 50%; }
+      100% { background-position: -30% 50%; }
+    }
+
+    @keyframes conectaGlow {
+      0%   { filter: none; }
+      24%  { filter: none; }
+      36%  { filter: drop-shadow(0 0 8px rgba(255,255,255,0.55)) drop-shadow(0 0 20px rgba(255,255,255,0.2)); }
+      48%  { filter: none; }
+      100% { filter: none; }
+    }
+
+    @keyframes conectaUnderline {
+      0%   { opacity: 0.25; }
+      24%  { opacity: 0.25; }
+      36%  { opacity: 0.85; }
+      48%  { opacity: 0.25; }
+      100% { opacity: 0.25; }
+    }
+
+    /* ── Ícones SVG inline — sem position absolute, sem pseudo-elementos ── */
+    .ci-svg {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+    .ci-svg svg {
+      width: 20px;
+      height: 20px;
+      pointer-events: none;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- PASSO 2: Header bar glassmorphism (atrás da logo) -->
+  <div id="header-bar"></div>
+
+  <div id="intro">
+    <div id="logo-wrap">
+      <!-- LOGO PRINCIPAL (animação de entrada) -->
+      <img src="img/logo.png" alt="R&R Studio" />
+      <div id="logo-overlay"></div>
+    </div>
+  </div>
+
+  <div id="logo-top">
+    <!-- LOGO PEQUENO FIXO NO TOPO -->
+    <img src="img/logo.png" alt="R&R Studio" />
+  </div>
+
+  <div id="site-content">
+    <h1>R&amp;R Studio</h1>
+    <p>Design &amp; Direção Criativa — onde cada detalhe é intencional e cada projeto conta uma história única.</p>
+
+    <!-- ── ABOUT SECTION (tela inicial) ── -->
+    <div id="about-section">
+      <span class="about-badge">O Fim da Era do PDF</span>
+
+      <h2 class="about-title">
+        Design que não apenas decora,<br>
+        mas <strong class="word-conecta">conecta</strong>.
+      </h2>
+
+      <p class="about-desc">
+        No R&amp;R Studio, transformamos a forma como você se apresenta. Saímos do PDF comum para criar experiências digitais interativas que aproximam você do seu público.
+      </p>
+
+      <!-- PASSO 3: Grid sem Cartão de Visitas -->
+      <div class="projects-section-header">
+        <div class="projects-section-line"></div>
+        <span class="projects-section-label">Nossos Projetos</span>
+        <div class="projects-section-line"></div>
+      </div>
+
+      <div class="service-cards-grid">
+        <button class="service-card" onclick="showServiceDetails('cardapios')">
+          <span class="service-card-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="16" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span></span>
+          <span class="service-card-label">Cardápios Inteligentes</span>
+        </button>
+        <button class="service-card" onclick="showServiceDetails('convites')">
+          <span class="service-card-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="1"/><polyline points="2,6 12,14 22,6"/></svg></span></span>
+          <span class="service-card-label">Convites Personalizados</span>
+        </button>
+        <button class="service-card service-card-biolink" onclick="showServiceDetails('biolinks')">
+          <span class="service-card-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><line x1="9.5" y1="9.5" x2="14.5" y2="14.5"/></svg></span></span>
+          <span class="service-card-label">Bio Links</span>
+        </button>
+      </div>
+
+      <button class="about-cta" onclick="Maps('quiz')">
+        Criar meu projeto
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <button class="btn-meet-us" onclick="Maps('about-us')">
+        Nos conheça
+      </button>
+    </div>
+
+    <!-- ── QUEM SOMOS ── -->
+    <div id="about-us-section">
+
+      <!-- Imagens decorativas fixas -->
+      <img src="img/img-left.png"  alt="" class="deco-img deco-left"  aria-hidden="true" loading="lazy" />
+      <img src="img/img-right.png" alt="" class="deco-img deco-right" aria-hidden="true" loading="lazy" />
+
+      <button id="btn-back-about" onclick="Maps('home')">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Voltar
+      </button>
+
+      <div class="about-us-header">
+        <div class="about-us-tag">R&amp;R Studio</div>
+        <h2 class="about-us-title">Quem está <strong>por trás</strong></h2>
+      </div>
+
+      <div class="about-us-grid">
+        <div class="member-card">
+          <div class="member-photo">
+            <img
+              src="img/foto-rafael-ferreira.png"
+              alt="Rafael Ferreira"
+              loading="lazy"
+              onerror="this.parentElement.innerHTML='<div class=\'member-photo-placeholder\'>👤</div>'"
+            />
+          </div>
+          <div class="member-name">Rafael Ferreira</div>
+          <div class="member-role">Especialista em Tecnologia &amp; Soluções Criativas</div>
+          <div class="member-line"></div>
+          <p class="member-desc">
+            Apaixonado por tecnologia e entusiasta da criatividade aplicada a negócios.
+            Está sempre em busca de ideias inovadoras e soluções estratégicas para transformar projetos em experiências funcionais e marcantes.
+          </p>
+          <p class="member-desc" style="margin-top:0.7rem;">
+            Possui sólida experiência em programação, inteligência artificial e análise de sistemas, unindo visão técnica e criatividade para desenvolver soluções modernas e eficientes.
+          </p>
+          <p class="member-desc" style="margin-top:0.7rem; border-left:1px solid rgba(255,255,255,0.1); padding-left:0.85rem; font-style:italic;">
+            Acredita que grandes projetos nascem da combinação entre uma comunicação clara com o cliente, estratégia e uma identidade visual impactante.
+          </p>
+        </div>
+
+        <div class="about-us-divider"></div>
+
+        <div class="member-card">
+          <div class="member-photo">
+            <img
+              src="img/foto-rafael-lago.png"
+              alt="Rafael Lago"
+              loading="lazy"
+              onerror="this.parentElement.innerHTML='<div class=\'member-photo-placeholder\'>👤</div>'"
+            />
+          </div>
+          <div class="member-name">Rafael Lago</div>
+          <div class="member-role">Tecnologia &amp; Estratégia Digital</div>
+          <div class="member-line"></div>
+          <p class="member-desc">
+            Especialista em transformar conceitos criativos em soluções digitais funcionais e escaláveis.
+            Garante que cada projeto não só pareça bom, mas também entregue resultados reais.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── QUIZ ── -->
+    <div id="quiz-container">
+
+      <button id="btn-back" onclick="goBack()">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Voltar
+      </button>
+
+      <div class="quiz-progress" id="quiz-progress">
+        <div class="progress-dot active" id="dot-0"></div>
+        <div class="progress-dot" id="dot-1"></div>
+        <div class="progress-dot" id="dot-2"></div>
+        <div class="progress-dot" id="dot-3"></div>
+      </div>
+
+      <div class="quiz-step active" id="step-1">
+        <div class="quiz-label">Passo 1 de 3</div>
+        <div class="quiz-question">O que você quer modernizar hoje?</div>
+        <div class="quiz-divider"></div>
+        <!-- PASSO 4: Removida opção Cartão de Visitas; opção C = Bio Link -->
+        <button class="quiz-option" onclick="choose(1,'A','Cardápio / Catálogo')">
+          <span class="opt-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="16" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span></span> Meu Cardápio / Catálogo
+        </button>
+        <button class="quiz-option" onclick="choose(1,'B','Convite para um Evento')">
+          <span class="opt-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="1"/><polyline points="2,6 12,14 22,6"/></svg></span></span> Convite para um Evento
+        </button>
+        <button class="quiz-option" onclick="choose(1,'C','Bio Link')">
+          <span class="opt-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><line x1="9.5" y1="9.5" x2="14.5" y2="14.5"/></svg></span></span> Meu Bio Link
+        </button>
+        <button class="quiz-option" onclick="choose(1,'D','Outra ideia')">
+          <span class="opt-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="rgba(255,255,255,0.6)"/></svg></span></span> Outra ideia
+        </button>
+      </div>
+
+      <div class="quiz-step" id="step-2">
+        <div class="quiz-label">Passo 2 de 3</div>
+        <div class="quiz-question" id="step2-question">Qual é a sua prioridade hoje?</div>
+        <div class="quiz-divider"></div>
+        <div id="step2-options"></div>
+      </div>
+
+      <div class="quiz-step" id="step-3">
+        <div class="quiz-label">Passo 3 de 3</div>
+        <div class="quiz-question">Qual é a <em>'vibe'</em> do seu negócio ou evento?</div>
+        <div class="quiz-divider"></div>
+        <button class="quiz-option" onclick="choose(3,'E1','Minimalista e Elegante')">
+          <span class="opt-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"><rect x="5" y="5" width="14" height="14" rx="1"/></svg></span></span> Minimalista e Elegante
+        </button>
+        <button class="quiz-option" onclick="choose(3,'E2','Moderno e Tecnológico')">
+          <span class="opt-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"><circle cx="5" cy="5" r="1.5"/><circle cx="12" cy="5" r="1.5"/><circle cx="19" cy="5" r="1.5"/><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="5" cy="19" r="1.5"/><circle cx="12" cy="19" r="1.5"/><circle cx="19" cy="19" r="1.5"/></svg></span></span> Moderno e Tecnológico
+        </button>
+        <button class="quiz-option" onclick="choose(3,'E3','Rústico e Acolhedor')">
+          <span class="opt-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="8" x2="21" y2="8"/><line x1="5" y1="13" x2="19" y2="13"/><line x1="7" y1="18" x2="17" y2="18"/></svg></span></span> Rústico e Acolhedor
+        </button>
+        <button class="quiz-option" onclick="choose(3,'E4','Alegre e Colorido')">
+          <span class="opt-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9"/></svg></span></span> Alegre e Colorido
+        </button>
+      </div>
+
+      <div id="step-loading">
+        <div class="loading-text">Analisando seu perfil...</div>
+        <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+      </div>
+
+      <div id="step-final">
+        <div class="final-tag">Análise concluída</div>
+        <div class="final-headline">Perfeito! Já sabemos o que você precisa.</div>
+        <div class="final-summary" id="final-summary"></div>
+        <a id="whatsapp-btn" href="#" class="cta-btn" target="_blank">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"/></svg>
+          Enviar meu projeto para o R&amp;R Studio
+        </a>
+      </div>
+
+    </div><!-- /quiz-container -->
+
+    <!-- ══════════════════════════════════════════
+         SERVICE DETAILS SECTION
+    ══════════════════════════════════════════ -->
+    <div id="service-details-section">
+
+      <button id="btn-back-details" onclick="Maps('home')">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Voltar
+      </button>
+
+      <span class="details-badge" id="details-badge">Serviço</span>
+      <h2 class="details-title" id="details-title">Título do Serviço</h2>
+      <p class="details-copy" id="details-copy">Descrição do serviço...</p>
+
+      <div class="details-mockups" id="details-mockups">
+        <div class="mockup-img-wrap" id="mockup-wrap-1"></div>
+        <div class="mockup-img-wrap" id="mockup-wrap-2"></div>
+      </div>
+
+      <div id="details-cta-wrap" style="width:100%;"></div>
+
+    </div>
+
+  </div><!-- /site-content -->
+
+  <script>
+    /* ─────────────────────────────────────────────────
+       DADOS DOS SERVIÇOS (sem Cartão de Visitas — Passo 3)
+    ───────────────────────────────────────────────── */
+    const services = {
+      cardapios: {
+        badge: 'Cardápios Interativos',
+        title: 'Seu cardápio que vende enquanto você dorme.',
+        copy: 'Chega de PDF pesado que trava no celular e foto borrada no WhatsApp. Criamos experiências digitais que encantam o cliente antes do primeiro garfo. Cardápio online com categorias, modal de detalhes, botão de pedido e design que combina com a alma do seu negócio.',
+        img1: 'img/mockup-cardapio-1.png',
+        img2: 'img/mockup-cardapio-2.png',
+        liveUrl: 'exemplos/pizzaria/index.html',
+        hasLive: true
+      },
+      convites: {
+        badge: 'Convites Personalizados',
+        title: 'Convites que emocionam antes da festa começar.',
+        copy: 'Esqueça o convite de papel que vai para a gaveta e some. Criamos convites digitais interativos com confirmação de presença (RSVP), localização integrada, contagem regressiva e um design que reflete cada detalhe do seu evento.',
+        img1: 'img/mockup-convite-1.png',
+        img2: 'img/mockup-convite-2.png',
+        liveUrl: 'exemplos/convite/index.html',
+        hasLive: true
+      },
+      biolinks: {
+        badge: 'Bio Links',
+        title: 'Um link que organiza tudo o que você é.',
+        copy: 'Transforme aquele único link da sua bio em uma vitrine completa. Seus produtos, redes, portfólio e contato em uma página elegante, rápida e que representa sua marca de verdade. Sem templates genéricos — cada detalhe pensado para você.',
+        img1: 'img/mockup-biolink-1.png',
+        img2: 'img/mockup-biolink-2.png',
+        liveUrl: 'exemplos/biolink/index.html',
+        hasLive: true
+      }
+    };
+
+    /* ─────────────────────────────────────────────────
+       ROUTER CENTRALIZADO + HISTORY API (Passo 5)
+    ───────────────────────────────────────────────── */
+    const screens = {
+      home: document.getElementById('about-section'),
+      'about-us': document.getElementById('about-us-section'),
+      quiz: document.getElementById('quiz-container'),
+      'service-details': document.getElementById('service-details-section')
+    };
+
+    let currentScreen = 'home';
+    let _suppressPushState = false; // evita duplo pushState no popstate
+
+    /* Maps() é o navigate() público — também faz pushState (Passo 5) */
+    async function Maps(target) {
+      if (!_suppressPushState && target !== currentScreen) {
+        history.pushState({ screen: target }, '', '#' + target);
+      }
+      await _doNavigate(target);
+    }
+
+    /* Intercepta botão Voltar do navegador / celular (Passo 5) */
+    window.addEventListener('popstate', async (e) => {
+      const target = (e.state && e.state.screen) ? e.state.screen : 'home';
+      _suppressPushState = true;
+      await _doNavigate(target);
+      _suppressPushState = false;
+    });
+
+    async function _doNavigate(target) {
+      const current = screens[currentScreen];
+      const next = screens[target];
+      if (!next || target === currentScreen) return;
+
+      // Esconde tela atual
+      if (currentScreen === 'home') {
+        current.classList.add('hiding');
+        await wait(420);
+        current.style.display = 'none';
+      } else if (currentScreen === 'quiz') {
+        current.classList.remove('visible');
+        await wait(700);
+        current.style.display = 'none';
+        current.style.opacity = '';
+        current.style.transform = '';
+        showStep(1);
+        updateProgress(0);
+        document.getElementById('btn-back').classList.remove('visible');
+      } else {
+        current.classList.remove('visible');
+        await wait(460);
+        current.style.display = 'none';
+      }
+
+      currentScreen = target;
+
+      // Mostra nova tela
+      if (target === 'home') {
+        next.style.display = 'flex';
+        next.getBoundingClientRect();
+        next.classList.remove('hiding');
+      } else if (target === 'quiz') {
+        next.style.display = 'block';
+        next.getBoundingClientRect();
+        next.classList.add('visible');
+        updateBackBtn(1);
+      } else {
+        next.style.display = 'flex';
+        next.getBoundingClientRect();
+        next.classList.add('visible');
+      }
+    }
+
+    /* Mantém navigate() como alias interno para goBack() e showServiceDetails() */
+    async function navigate(target) {
+      await Maps(target);
+    }
+
+    /* ─────────────────────────────────────────────────
+       MOSTRAR DETALHES DO SERVIÇO
+    ───────────────────────────────────────────────── */
+    async function showServiceDetails(serviceKey) {
+      const data = services[serviceKey];
+      if (!data) return;
+
+      document.getElementById('details-badge').textContent = data.badge;
+      document.getElementById('details-title').textContent = data.title;
+      document.getElementById('details-copy').textContent = data.copy;
+
+      renderMockup('mockup-wrap-1', data.img1);
+      renderMockup('mockup-wrap-2', data.img2);
+
+      const ctaWrap = document.getElementById('details-cta-wrap');
+      if (data.hasLive && data.liveUrl) {
+        ctaWrap.innerHTML = `
+          <a class="details-cta-live" href="${data.liveUrl}">
+            👀 Acesse o modelo vivo
+          </a>`;
+      } else {
+        ctaWrap.innerHTML = `
+          <span class="details-cta-live disabled">
+            Modelo em construção ⏳
+          </span>`;
+      }
+
+      await Maps('service-details');
+    }
+
+    function renderMockup(wrapperId, imgSrc) {
+      const wrap = document.getElementById(wrapperId);
+      if (imgSrc) {
+        wrap.innerHTML = `<img src="${imgSrc}" alt="Mockup do serviço" loading="lazy" />`;
+      } else {
+        wrap.innerHTML = `
+          <div class="mockup-placeholder">
+            <div class="mockup-placeholder-icon">🚧</div>
+            <div class="mockup-placeholder-text">Exemplos em<br>produção</div>
+          </div>`;
+      }
+    }
+
+    /* ─────────────────────────────────────────────────
+       PASSO 1: INTRO ANIMATION — MAX 3 SEGUNDOS
+    ───────────────────────────────────────────────── */
+    const intro       = document.getElementById('intro');
+    const logoWrap    = document.getElementById('logo-wrap');
+    const logoOverlay = document.getElementById('logo-overlay');
+    const logoTop     = document.getElementById('logo-top');
+    const headerBar   = document.getElementById('header-bar');
+    const siteContent = document.getElementById('site-content');
+
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+
+    function clip(value, ms, ease = 'cubic-bezier(0.76,0,0.24,1)') {
+      return new Promise(resolve => {
+        logoOverlay.style.transition = `clip-path ${ms}ms ${ease}`;
+        logoOverlay.getBoundingClientRect();
+        logoOverlay.style.clipPath = value;
+        setTimeout(resolve, ms);
+      });
+    }
+
+    function hide(ms = 160, ease = 'cubic-bezier(0.4,0,0.6,1)') {
+      return clip('inset(0 0% 0 0)', ms, ease);
+    }
+
+    async function runIntro() {
+      // Sequência compacta: ~1.0s total de animação de logo
+      await wait(150);
+
+      await clip('inset(0 60% 0 0)', 220, 'cubic-bezier(0.4,0,0.2,1)');
+      await wait(60);
+      await hide(160);
+      await wait(60);
+
+      await clip('inset(50% 0 0% 0)', 200, 'cubic-bezier(0.4,0,0.2,1)');
+      await wait(60);
+      await clip('inset(0 0% 0 0)', 140, 'cubic-bezier(0.4,0,0.6,1)');
+      await wait(80);
+
+      // Reveal final rápido
+      await clip('inset(0 100% 0 0)', 700, 'cubic-bezier(0.76,0,0.24,1)');
+
+      await wait(200);
+
+      // Fly-up: logo sobe e diminui enquanto site surge quase simultaneamente
+      const deltaY = (0.095 - 0.5) * window.innerHeight;
+      const FLY    = 600;
+
+      logoWrap.style.transition =
+        `transform ${FLY}ms cubic-bezier(0.65,0,0.15,1),
+         opacity   ${FLY}ms cubic-bezier(0.65,0,0.15,1)`;
+      logoWrap.getBoundingClientRect();
+      logoWrap.style.transform = `translate(-50%, calc(-50% + ${deltaY}px)) scale(0.165)`;
+      logoWrap.style.opacity   = '0';
+
+      // Site content e logo top surgem quase imediatamente junto com o fly-up
+      await wait(FLY * 0.25);
+
+      // PASSO 2: header bar aparece com a logo
+      headerBar.style.transition = 'opacity 400ms cubic-bezier(0.4,0,0.15,1)';
+      headerBar.style.opacity    = '1';
+
+      logoTop.style.transition = 'opacity 400ms cubic-bezier(0.4,0,0.15,1)';
+      logoTop.style.opacity    = '1';
+
+      siteContent.style.transition = 'opacity 500ms cubic-bezier(0.4,0,0.15,1)';
+      siteContent.style.opacity    = '1';
+
+      await wait(FLY * 0.8);
+
+      intro.style.transition = 'opacity 200ms ease';
+      intro.style.opacity    = '0';
+
+      await wait(210);
+      intro.style.display         = 'none';
+      logoTop.style.pointerEvents = 'auto';
+      logoTop.classList.add('settled');
+      headerBar.classList.add('settled');
+      document.body.style.overflowY = 'auto';
+    }
+
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(runIntro);
+
+    /* ─────────────────────────────────────────────────
+       QUIZ LOGIC
+    ───────────────────────────────────────────────── */
+    const answers = { step1Key: '', step1Label: '', step2Label: '', step3Label: '' };
+
+    // PASSO 4: step2Options.C atualizado para Bio Links
+    const step2Options = {
+      A: [
+        { icon: '<span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 13 9 20 9"/><path d="M20 9L13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/></svg></span>', text: 'Fim do PDF pesado: Quero um link leve e rápido.' },
+        { icon: '<span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>', text: 'Automatizar pedidos: Quero receber tudo pronto no WhatsApp.' },
+        { icon: '<span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>', text: 'Cortar custos: Quero parar de gastar com impressão.' },
+      ],
+      B: [
+        { icon: '<span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>', text: 'Controle total (RSVP): Preciso saber exatamente quem vai.' },
+        { icon: '<span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>', text: 'Facilidade: Quero integrar localização e lista de presentes.' },
+        { icon: '<span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>', text: 'Uau Factor: Quero impressionar com um design interativo.' },
+      ],
+      C: [
+        { icon: '<span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span>', text: 'Organizar minha vitrine no Instagram.' },
+        { icon: '<span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><line x1="9.5" y1="9.5" x2="14.5" y2="14.5"/></svg></span>', text: 'Conexão instantânea e profissional.' },
+        { icon: '<span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></span>', text: 'Reunir todos os meus produtos em um só lugar.' },
+      ],
+      D: [
+        { icon: '<span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L8 8H4l4 4-2 8 6-4 6 4-2-8 4-4h-4z"/></svg></span>', text: 'Inovação pura: Quero uma experiência digital premium.' },
+        { icon: '<span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span>', text: 'Mais conversão: Quero facilitar a vida do meu cliente.' },
+        { icon: '<span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="8"/></svg></span>', text: 'Ainda não sei: Mas preciso modernizar meu negócio urgente.' },
+      ],
+    };
+
+    function updateBackBtn(stepNum) {
+      const btn = document.getElementById('btn-back');
+      if (stepNum >= 1 && stepNum <= 4) {
+        btn.classList.add('visible');
+      } else {
+        btn.classList.remove('visible');
+      }
+    }
+
+    async function goBack() {
+      const step1   = document.getElementById('step-1');
+      const step2   = document.getElementById('step-2');
+      const step3   = document.getElementById('step-3');
+      const finalEl = document.getElementById('step-final');
+
+      if (finalEl.classList.contains('active')) {
+        document.getElementById('quiz-progress').style.opacity = '1';
+        updateProgress(2); showStep(3); updateBackBtn(3);
+
+      } else if (step3.classList.contains('active')) {
+        const opts = step2Options[answers.step1Key];
+        const container = document.getElementById('step2-options');
+        container.innerHTML = '';
+        opts.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'quiz-option';
+          btn.style.marginBottom = '0.85rem';
+          btn.innerHTML = `<span class="opt-icon">${opt.icon}</span> ${opt.text}`;
+          btn.onclick = () => choose(2, '', opt.text);
+          container.appendChild(btn);
+        });
+        updateProgress(1); showStep(2); updateBackBtn(2);
+
+      } else if (step2.classList.contains('active')) {
+        updateProgress(0); showStep(1); updateBackBtn(1);
+
+      } else {
+        await Maps('home');
+      }
+    }
+
+    function updateProgress(activeStep) {
+      for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById('dot-' + i);
+        dot.className = 'progress-dot';
+        if (i < activeStep) dot.classList.add('done');
+        else if (i === activeStep) dot.classList.add('active');
+      }
+    }
+
+    function showStep(id) {
+      document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step-loading').classList.remove('active');
+      document.getElementById('step-final').classList.remove('active');
+      const el = document.getElementById('step-' + id);
+      if (el) {
+        el.style.animation = 'none';
+        el.getBoundingClientRect();
+        el.style.animation = '';
+        el.classList.add('active');
+      }
+    }
+
+    function choose(step, key, label) {
+      if (step === 1) {
+        answers.step1Key   = key;
+        answers.step1Label = label;
+
+        const opts = step2Options[key];
+        const container = document.getElementById('step2-options');
+        container.innerHTML = '';
+        opts.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'quiz-option';
+          btn.style.marginBottom = '0.85rem';
+          btn.innerHTML = `<span class="opt-icon">${opt.icon}</span> ${opt.text}`;
+          btn.onclick = () => choose(2, '', opt.text);
+          container.appendChild(btn);
+        });
+
+        updateProgress(1);
+        showStep(2);
+        updateBackBtn(2);
+
+      } else if (step === 2) {
+        answers.step2Label = label;
+        updateProgress(2);
+        showStep(3);
+        updateBackBtn(3);
+
+      } else if (step === 3) {
+        answers.step3Label = label;
+        updateProgress(3);
+        updateBackBtn(99);
+        showLoading();
+      }
+    }
+
+    async function showLoading() {
+      document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step-loading').classList.add('active');
+
+      const bar = document.querySelector('.loading-bar');
+      bar.style.animation = 'none';
+      bar.getBoundingClientRect();
+      bar.style.animation = '';
+
+      await wait(1200);
+      showFinal();
+    }
+
+    function showFinal() {
+      document.getElementById('step-loading').classList.remove('active');
+
+      const summary = document.getElementById('final-summary');
+      summary.innerHTML = `
+        <div class="final-summary-item">📦 Projeto: <span>${answers.step1Label}</span></div>
+        <div class="final-summary-item">🎯 Prioridade: <span>${answers.step2Label}</span></div>
+        <div class="final-summary-item">🎨 Estilo: <span>${answers.step3Label}</span></div>
+      `;
+
+      // PASSO 4: número de WhatsApp atualizado para 5543988012469
+      const msg = `Olá R&R Studio! Brinquei no site de vocês e montei um projeto. Gostaria de criar um(a) ${answers.step1Label} com estilo ${answers.step3Label}. Hoje meu maior problema é que ${answers.step2Label}. Podemos conversar sobre um orçamento?`;
+      const url = `https://wa.me/5543988012469?text=${encodeURIComponent(msg)}`;
+      document.getElementById('whatsapp-btn').href = url;
+
+      document.getElementById('step-final').classList.add('active');
+      updateBackBtn(4);
+      document.getElementById('quiz-progress').style.opacity = '0';
+    }
+  </script>
+</body>
+</html>
