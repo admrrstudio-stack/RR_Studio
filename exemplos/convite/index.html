@@ -1113,6 +1113,38 @@
       clip-path: polygon(50% 0%, 100% 60%, 75% 60%, 75% 100%, 25% 100%, 25% 60%, 0% 60%);
       margin-right: 9px;
     }
+
+    /* =========================================================
+       TOAST DE MODO DEMO
+    ========================================================= */
+    .demo-toast {
+      position: fixed;
+      bottom: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--jungle-dark);
+      color: var(--text-light);
+      padding: 1rem 1.4rem;
+      border-radius: 14px;
+      box-shadow: 0 10px 32px rgba(0,0,0,.45);
+      z-index: 99999;
+      opacity: 0;
+      transition: all 0.45s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      width: 90%;
+      max-width: 400px;
+      border-left: 4px solid var(--accent-yellow);
+      pointer-events: none;
+    }
+    .demo-toast.show {
+      bottom: 40px;
+      opacity: 1;
+    }
+    .demo-toast p {
+      margin: 0;
+      font-size: 0.9rem;
+      font-family: 'Nunito', sans-serif;
+      line-height: 1.45;
+    }
   </style>
 </head>
 <body>
@@ -1233,7 +1265,7 @@
       </p>
 
       <!-- ► TROQUE a URL pelo link real do Google Maps ou Waze -->
-      <div class="btn-map demo-highlight-target-map" aria-label="Botão ilustrativo de localização">
+      <div class="btn-map demo-highlight-target-map" id="btn-map" style="cursor:pointer;" aria-label="Botão ilustrativo de localização">
         📍 Como chegar
       </div>
 
@@ -1283,7 +1315,7 @@
 
       <!-- ► TROQUE o número: substitua SEUNUMERO pelo DDD+número sem espaços
            Ex: 5511999999999  (55 = Brasil, 11 = DDD, 999999999 = número) -->
-      <div class="btn-rsvp" aria-label="Botão ilustrativo de confirmação via WhatsApp">
+      <div class="btn-rsvp" id="btn-rsvp" style="cursor:pointer;" aria-label="Botão ilustrativo de confirmação via WhatsApp">
         <svg class="wpp-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
           <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.557 4.116 1.534 5.845L.057 23.527a.5.5 0 00.609.61l5.748-1.489A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.9a9.89 9.89 0 01-5.035-1.372l-.36-.214-3.732.967.993-3.63-.235-.374A9.9 9.9 0 012.1 12C2.1 6.528 6.528 2.1 12 2.1S21.9 6.528 21.9 12 17.472 21.9 12 21.9z"/>
@@ -1332,13 +1364,13 @@
 
       <div class="gifts-grid">
 
-        <div class="btn-gift" aria-label="Botão ilustrativo de chave PIX">
+        <div class="btn-gift" id="btn-pix" style="cursor:pointer;" aria-label="Botão ilustrativo de chave PIX">
           <span class="gift-icon">🔑</span>
           <span class="gift-label">Chave PIX</span>
           Chave Pix<br>do Leo
         </div>
 
-        <div class="btn-gift" aria-label="Botão ilustrativo de lista em loja">
+        <div class="btn-gift" id="btn-loja" style="cursor:pointer;" aria-label="Botão ilustrativo de lista em loja">
           <span class="gift-icon">🛍️</span>
           <span class="gift-label">Loja</span>
           🎁 Lista de<br>Presentes em Loja
@@ -1459,6 +1491,13 @@
       <span class="cta-float-star" aria-hidden="true">⭐</span>
       Gostei desse modelo! Quero para o meu evento
     </a>
+  </div>
+
+  <!-- ======================================================
+       TOAST DE MODO DEMO
+  ====================================================== -->
+  <div class="demo-toast" id="demoToast" role="status" aria-live="polite">
+    <p id="demoToastMsg"></p>
   </div>
 
   <!-- ======================================================
@@ -1599,6 +1638,36 @@
       legendIds.forEach((id) => {
         const el = document.getElementById(id);
         if (el) legendObserver.observe(el);
+      });
+    })();
+    /* --------------------------------------------------------
+       6. TOAST DE MODO DEMO — botões ilustrativos
+    -------------------------------------------------------- */
+    (function () {
+      const toast = document.getElementById('demoToast');
+      const msg   = document.getElementById('demoToastMsg');
+
+      function showDemoToast(message) {
+        msg.innerHTML = message;
+        toast.classList.add('show');
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => toast.classList.remove('show'), 4000);
+      }
+
+      document.getElementById('btn-map').addEventListener('click', function () {
+        showDemoToast('<strong>Modo Demonstração:</strong> Na versão final, este botão abre a rota no Google Maps direto para o local da festa 🗺️');
+      });
+
+      document.getElementById('btn-rsvp').addEventListener('click', function () {
+        showDemoToast('<strong>Modo Demonstração:</strong> Na versão final, este botão abre o WhatsApp com a mensagem de confirmação já preenchida ✅');
+      });
+
+      document.getElementById('btn-pix').addEventListener('click', function () {
+        showDemoToast('<strong>Modo Demonstração:</strong> Na versão final, este botão copia a chave PIX ou abre o app de pagamento 🔑');
+      });
+
+      document.getElementById('btn-loja').addEventListener('click', function () {
+        showDemoToast('<strong>Modo Demonstração:</strong> Na versão final, este botão redireciona para a lista de presentes na loja 🎁');
       });
     })();
   </script>

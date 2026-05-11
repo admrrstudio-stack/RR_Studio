@@ -3,7 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>R&R Studio</title>
+  <title>R&R Studio — Design & Direção Criativa</title>
+  <meta name="description" content="R&R Studio — Design digital que conecta. Cardápios interativos, convites personalizados e bio links que transformam a forma como você se apresenta." />
+  <meta property="og:title" content="R&R Studio — Design & Direção Criativa" />
+  <meta property="og:description" content="Design digital que conecta. Cardápios interativos, convites personalizados e bio links únicos para o seu negócio." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="img/logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="R&R Studio — Design & Direção Criativa" />
+  <meta name="twitter:description" content="Design digital que conecta. Cardápios interativos, convites personalizados e bio links únicos para o seu negócio." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet" />
@@ -11,11 +19,30 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --font-main: 'Montserrat', sans-serif;
+      --color-bg: #000;
+      --color-text: #fff;
+      --color-border: rgba(255,255,255,0.1);
+      --color-border-hover: rgba(255,255,255,0.38);
+      --color-text-muted: rgba(255,255,255,0.5);
+      --color-text-faint: rgba(255,255,255,0.35);
+      --color-text-dim: rgba(255,255,255,0.3);
+      --color-surface: rgba(255,255,255,0.04);
+      --color-surface-hover: rgba(255,255,255,0.07);
+      --radius-sm: 2px;
+      --radius-md: 4px;
+      --radius-lg: 6px;
+      --transition-fast: 0.25s ease;
+      --transition-base: 0.3s ease;
+      --transition-slow: 0.45s ease;
+    }
+
     html, body {
       width: 100%; height: 100%;
-      background: #000;
-      color: #fff;
-      font-family: 'Montserrat', sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-main);
       overflow-x: hidden;
     }
 
@@ -43,6 +70,7 @@
     #logo-wrap img {
       display: block;
       width: 440px;
+      height: auto;
     }
 
     #logo-overlay {
@@ -92,6 +120,7 @@
     #logo-top img {
       display: block;
       width: 72px;
+      height: auto;
     }
 
     /* ── SITE CONTENT ── */
@@ -152,9 +181,9 @@
       letter-spacing: 0.3em;
       text-transform: uppercase;
       color: rgba(255,255,255,0.4);
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid var(--color-border);
       padding: 0.45rem 0.9rem;
-      border-radius: 2px;
+      border-radius: var(--radius-sm);
     }
 
     .about-title {
@@ -184,7 +213,7 @@
       font-weight: 200;
       font-size: clamp(12px, 1.15vw, 15px);
       letter-spacing: 0.04em;
-      color: rgba(255,255,255,0.5);
+      color: var(--color-text-muted);
       line-height: 1.85;
       max-width: 480px;
     }
@@ -236,29 +265,29 @@
 
     .service-card {
       min-height: 70px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 6px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
       padding: 0.9rem 1.1rem;
       cursor: pointer;
       text-align: left;
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-main);
       color: rgba(255,255,255,0.75);
       font-weight: 300;
       font-size: clamp(11px, 1vw, 13px);
       letter-spacing: 0.08em;
-      transition: border-color 0.28s ease, color 0.28s ease, transform 0.28s ease, background 0.28s ease;
+      transition: border-color var(--transition-base), color var(--transition-base), transform var(--transition-base), background var(--transition-base);
       will-change: transform;
     }
 
     .service-card:hover {
-      border-color: rgba(255,255,255,0.38);
-      color: rgba(255,255,255,1);
+      border-color: var(--color-border-hover);
+      color: var(--color-text);
       transform: translateY(-2px);
-      background: rgba(255,255,255,0.07);
+      background: var(--color-surface-hover);
     }
 
     .service-card-icon {
@@ -274,18 +303,18 @@
       display: inline-flex;
       align-items: center;
       gap: 0.7rem;
-      background: #fff;
-      color: #000;
+      background: var(--color-text);
+      color: var(--color-bg);
       border: none;
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-main);
       font-weight: 400;
       font-size: clamp(10px, 1vw, 13px);
       letter-spacing: 0.2em;
       text-transform: uppercase;
       padding: 1rem 2rem;
-      border-radius: 3px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform var(--transition-base), box-shadow var(--transition-base);
       margin-top: 0.4rem;
     }
 
@@ -331,15 +360,15 @@
       background: none;
       border: none;
       cursor: pointer;
-      color: rgba(255,255,255,0.3);
-      font-family: 'Montserrat', sans-serif;
+      color: var(--color-text-dim);
+      font-family: var(--font-main);
       font-weight: 300;
       font-size: clamp(10px, 0.9vw, 12px);
       letter-spacing: 0.18em;
       text-transform: uppercase;
       padding: 0;
       margin-bottom: 1.6rem;
-      transition: color 0.25s ease;
+      transition: color var(--transition-fast);
     }
 
     #btn-back.visible {
@@ -405,15 +434,15 @@
       background: transparent;
       border: 1px solid rgba(255,255,255,0.15);
       color: rgba(255,255,255,0.8);
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-main);
       font-weight: 300;
       font-size: clamp(12px, 1.15vw, 15px);
       letter-spacing: 0.05em;
       padding: 1rem 1.4rem;
-      border-radius: 4px;
+      border-radius: var(--radius-md);
       cursor: pointer;
       text-align: left;
-      transition: all 0.3s ease;
+      transition: border-color var(--transition-base), color var(--transition-base), transform var(--transition-base), background var(--transition-base);
       display: flex;
       align-items: center;
       gap: 0.75rem;
@@ -556,18 +585,18 @@
 
     /* ── CTA BUTTON ── */
     .cta-btn {
-      background: #fff;
-      color: #000;
+      background: var(--color-text);
+      color: var(--color-bg);
       border: none;
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-main);
       font-weight: 400;
       font-size: clamp(11px, 1.1vw, 14px);
       letter-spacing: 0.18em;
       text-transform: uppercase;
       padding: 1.1rem 2rem;
-      border-radius: 3px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: transform var(--transition-base), box-shadow var(--transition-base);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -614,17 +643,17 @@
       align-items: center;
       gap: 0.7rem;
       background: transparent;
-      color: #fff;
+      color: var(--color-text);
       border: 1px solid rgba(255,255,255,0.55);
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-main);
       font-weight: 300;
       font-size: clamp(10px, 1vw, 13px);
       letter-spacing: 0.2em;
       text-transform: uppercase;
       padding: 0.85rem 2rem;
-      border-radius: 3px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
       margin-top: 0.6rem;
     }
 
@@ -782,7 +811,19 @@
       width: 100%;
       height: 100%;
       background: rgba(255,255,255,0.85);
+      animation: none;
+    }
+
+    #about-us-section.visible .member-line::after {
       animation: lineSweep 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    #about-us-section.visible .member-card:first-child .member-line::after {
+      animation-delay: 0s;
+    }
+
+    #about-us-section.visible .member-card:last-child .member-line::after {
+      animation-delay: 1.2s;
     }
 
     @keyframes lineSweep {
@@ -791,14 +832,6 @@
       50%  { left: 100%; opacity: 1; }
       51%  { opacity: 0; }
       100% { left: 100%; opacity: 0; }
-    }
-
-    .member-card:first-child .member-line::after {
-      animation-delay: 0s;
-    }
-
-    .member-card:last-child .member-line::after {
-      animation-delay: 1.2s;
     }
 
     /* ── FOTO DO MEMBRO ── */
@@ -907,9 +940,9 @@
       letter-spacing: 0.3em;
       text-transform: uppercase;
       color: rgba(255,255,255,0.4);
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid var(--color-border);
       padding: 0.45rem 0.9rem;
-      border-radius: 2px;
+      border-radius: var(--radius-sm);
     }
 
     .details-title {
@@ -985,19 +1018,19 @@
       display: inline-flex;
       align-items: center;
       gap: 0.7rem;
-      background: #fff;
-      color: #000;
+      background: var(--color-text);
+      color: var(--color-bg);
       border: none;
-      font-family: 'Montserrat', sans-serif;
+      font-family: var(--font-main);
       font-weight: 400;
       font-size: clamp(10px, 1vw, 13px);
       letter-spacing: 0.2em;
       text-transform: uppercase;
       padding: 1rem 2rem;
-      border-radius: 3px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
       text-decoration: none;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: transform var(--transition-base), box-shadow var(--transition-base);
       width: 100%;
       justify-content: center;
     }
@@ -1102,14 +1135,14 @@
   <div id="intro">
     <div id="logo-wrap">
       <!-- LOGO PRINCIPAL (animação de entrada) -->
-      <img src="img/logo.png" alt="R&R Studio" />
+      <img src="img/logo.png" alt="R&R Studio" width="440" height="220" />
       <div id="logo-overlay"></div>
     </div>
   </div>
 
   <div id="logo-top">
     <!-- LOGO PEQUENO FIXO NO TOPO -->
-    <img src="img/logo.png" alt="R&R Studio" />
+    <img src="img/logo.png" alt="R&R Studio" width="72" height="36" />
   </div>
 
   <div id="site-content">
@@ -1138,15 +1171,15 @@
 
       <div class="service-cards-grid">
         <button class="service-card" onclick="showServiceDetails('cardapios')">
-          <span class="service-card-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="16" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span></span>
+          <span class="service-card-icon" aria-hidden="true"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="16" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span></span>
           <span class="service-card-label">Cardápios Inteligentes</span>
         </button>
         <button class="service-card" onclick="showServiceDetails('convites')">
-          <span class="service-card-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="1"/><polyline points="2,6 12,14 22,6"/></svg></span></span>
+          <span class="service-card-icon" aria-hidden="true"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="1"/><polyline points="2,6 12,14 22,6"/></svg></span></span>
           <span class="service-card-label">Convites Personalizados</span>
         </button>
         <button class="service-card service-card-biolink" onclick="showServiceDetails('biolinks')">
-          <span class="service-card-icon"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><line x1="9.5" y1="9.5" x2="14.5" y2="14.5"/></svg></span></span>
+          <span class="service-card-icon" aria-hidden="true"><span class="ci-svg"><svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><line x1="9.5" y1="9.5" x2="14.5" y2="14.5"/></svg></span></span>
           <span class="service-card-label">Bio Links</span>
         </button>
       </div>
@@ -1219,11 +1252,16 @@
             />
           </div>
           <div class="member-name">Rafael Lago</div>
-          <div class="member-role">Tecnologia &amp; Estratégia Digital</div>
+          <div class="member-role">Estratégia de Negócios &amp; Soluções Digitais</div>
           <div class="member-line"></div>
           <p class="member-desc">
-            Especialista em transformar conceitos criativos em soluções digitais funcionais e escaláveis.
-            Garante que cada projeto não só pareça bom, mas também entregue resultados reais.
+            Direcionado à modelagem de negócios e à estruturação de processos no ambiente digital. Aplica o rigor analítico da administração no desenvolvimento de soluções interativas, garantindo que cada projeto seja desenhado não apenas com foco estético, mas estruturado para gerar conversão e impacto comercial direto.
+          </p>
+          <p class="member-desc">
+            Possui sólido conhecimento em gestão estratégica, análise de dados e automação de processos, unindo lógica financeira e visão de mercado. Utiliza essa base técnica de gestão para projetar catálogos digitais, links de bio e plataformas que operam com alta escalabilidade e eficiência operacional.
+          </p>
+          <p class="member-desc" style="margin-top:0.7rem; border-left:1px solid rgba(255,255,255,0.1); padding-left:0.85rem; font-style:italic;">
+            Acredita que a excelência de um projeto digital é alcançada na intersecção entre um design interativo altamente funcional e uma arquitetura de negócios fundamentada em métricas e resultados tangíveis.
           </p>
         </div>
       </div>
@@ -1299,7 +1337,7 @@
         <div class="final-tag">Análise concluída</div>
         <div class="final-headline">Perfeito! Já sabemos o que você precisa.</div>
         <div class="final-summary" id="final-summary"></div>
-        <a id="whatsapp-btn" href="#" class="cta-btn" target="_blank">
+        <a id="whatsapp-btn" href="#" class="cta-btn" target="_blank" rel="noopener noreferrer">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"/></svg>
           Enviar meu projeto para o R&amp;R Studio
         </a>
@@ -1398,6 +1436,10 @@
     });
 
     async function _doNavigate(target) {
+      if (!screens[target]) {
+        console.warn(`[Maps] tela desconhecida: "${target}" — redirecionando para home.`);
+        target = 'home';
+      }
       const current = screens[currentScreen];
       const next = screens[target];
       if (!next || target === currentScreen) return;
@@ -1413,9 +1455,14 @@
         current.style.display = 'none';
         current.style.opacity = '';
         current.style.transform = '';
+        // Reset quiz state
         showStep(1);
         updateProgress(0);
         document.getElementById('btn-back').classList.remove('visible');
+        answers.step1Key = '';
+        answers.step1Label = '';
+        answers.step2Label = '';
+        answers.step3Label = '';
       } else {
         current.classList.remove('visible');
         await wait(460);
@@ -1462,8 +1509,9 @@
 
       const ctaWrap = document.getElementById('details-cta-wrap');
       if (data.hasLive && data.liveUrl) {
+        const safeUrl = encodeURI(data.liveUrl);
         ctaWrap.innerHTML = `
-          <a class="details-cta-live" href="${data.liveUrl}">
+          <a class="details-cta-live" href="${safeUrl}" target="_blank" rel="noopener noreferrer">
             👀 Acesse o modelo vivo
           </a>`;
       } else {
@@ -1479,7 +1527,12 @@
     function renderMockup(wrapperId, imgSrc) {
       const wrap = document.getElementById(wrapperId);
       if (imgSrc) {
-        wrap.innerHTML = `<img src="${imgSrc}" alt="Mockup do serviço" loading="lazy" />`;
+        const img = document.createElement('img');
+        img.src = imgSrc;
+        img.alt = 'Mockup do serviço';
+        img.loading = 'lazy';
+        wrap.innerHTML = '';
+        wrap.appendChild(img);
       } else {
         wrap.innerHTML = `
           <div class="mockup-placeholder">
